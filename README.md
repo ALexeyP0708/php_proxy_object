@@ -105,15 +105,15 @@ Example in the constructor
 ```php
 <?php
 $handlers=new \Alpa\ProxyObject\Handlers([
-    // обработчик при запросе  свойств
+    // handler for members query
     'get'=>function($target,$prop,$proxy){},
-    // обработчик при записи  свойств
+    // handler for  members entry
     'set'=>function($target,$prop,$value,$proxy):void{},
-    // обработчик при удалении  свойств
+    // handler for entry members
     'unset'=>function($target,$prop,$proxy):void{},
-    // обработчик проверки  свойств
+    //  handler to check if members exist
     'isset'=>function($target,$prop,$proxy):bool{},
-    // обработчик генерации Итератора для цикла foreach
+    // handler for delete members
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
 ```
