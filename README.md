@@ -1,8 +1,16 @@
 # ProxyObject
 
 The component creates a proxy object for the observed object.
-Action handlers (getter | setter | isseter | unseter | iterator) are assigned for each property / method of the observable object .
+Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object .
 A similar principle is implemented in javascript through the Proxy constructor.
+When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.  
+
+The following actions exist when accessing the members of an object:  
+set - member entry  
+get - member value query  
+isset - member check  
+unset - member delete  
+iterator - assigning an iterator when iterating over the members of an object.
 
 Usage example:
 
@@ -91,7 +99,7 @@ unset($proxy->test); // unset($target->_test)
 echo key_exists($target,'_test'); // return false;
 
 ```
-## Создание обработчиков
+## Create handlers
 
 Example in the constructor
 ```php
