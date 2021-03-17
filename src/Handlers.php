@@ -1,0 +1,194 @@
+<?php
+
+namespace Alpa\ProxyObject;
+
+
+class Handlers
+{
+    protected array $properties=[
+        'get'=>[],
+        'set'=>[],
+        'isset'=>[],
+        'unset'=>[],
+        'call'=>[]
+    ];
+    protected ?\Closure $get=null;
+    protected ?\Closure $set=null;
+    protected ?\Closure $unset=null;
+    protected ?\Closure $isset=null;
+    protected ?\Closure $call=null;
+    protected ?\Closure $iterator=null;
+
+    public function __construct(array $handlers=[],array $handlersProp=[])
+    {
+        foreach($handlers as $member=>$call){
+            $this->init($member,$call);
+        }
+        foreach($handlers as $member=>$props){
+            foreach($props as $prop=>$call){
+                $this->initProp($member,$prop,$call);
+            }
+        }
+    }
+
+    /**
+     * initializes handlers for specific actions (get | set | unset | isset | call)
+     * @param string $action get | set | unset | isset | call The action for which you want to install the handler
+     * @param callable $handler  A handler that will process a specific action
+     * @return bool  Indicates whether a handler is set
+     */
+    public function init(string $action,callable $handler):bool
+    {
+        if(!property_exists($this,$action) || $this->$action!==null){
+            return false;
+        }
+        if(!($handler instanceof \Closure)){
+            $handler=\Closure::fromCallable($handler);
+        }
+        $this->$action=$handler;
+        return true;
+    }
+
+    /**
+     * initializes handlers for specific actions properties  
+     * @param string $action get | set | unset | isset | call The action for which you want to install the handler
+     * @param string $prop the property for which the handler is intended
+     * @param callable $handler  A handler that will process a specific property action  
+     * @return bool  Indicates whether a handler is set
+     */
+    public function initProp(string $action,string $prop,callable $handler):bool
+    {
+
+        if(!array_key_exists($action,$this->properties) || array_key_exists($prop,$this->properties[$action])){
+            return false;
+        }
+        if(!($handler instanceof \Closure)){
+            $handler=\Closure::fromCallable($handler);
+        }
+        $this->properties[$action][$prop]=$handler;
+        return true;
+    }
+
+    /**
+     * runs handler for the property with the 'get' action
+     * @param object $target
+     * @param string $prop
+     * @param Proxy|null $proxy
+     * @return mixed
+     */
+    public function runGet(object $target,string $prop,?Proxy $proxy=null)
+    {
+        $action='get';
+        if(array_key_exists($prop,$this->properties[$action])){
+            return $this->properties[$action][$prop]($target,$prop,$proxy);
+        } else
+        if($this->$action!==null){
+            $call=$this->$action;
+            return $call($target,$prop,$proxy);
+        }
+        return $target->$prop;
+    }
+
+    /**
+     * runs handler for the property with the 'set' action
+     * @param object $target
+     * @param string $prop
+     * @param $value 
+     * @param Proxy|null $proxy
+     * @return mixed
+     */ 
+    public function runSet(object $target,string $prop,$value,?Proxy $proxy=null):void
+    {
+        $action='set';
+        if(array_key_exists($prop,$this->properties[$action])){
+            $this->properties[$action][$prop]($target,$prop,$value,$proxy);
+        } else
+        if($this->$action!==null){
+            $call=$this->$action;
+            $call($target,$prop,$value,$proxy);
+        } else {
+            $target->$prop=$value;
+        }
+    }
+
+    /**
+     * runs handler for the property with the 'isset' action
+     * @param object $target
+     * @param string $prop
+     * @param Proxy|null $proxy
+     * @return bool
+     */
+    public function runIsset(object $target,string $prop,?Proxy $proxy=null):bool
+    {
+        $action='isset';
+        if(array_key_exists($prop,$this->properties[$action])){
+            return $this->properties[$action][$prop]($target,$prop,$proxy);
+        } else
+        if($this->$action!==null){
+            $call=$this->$action;
+            return $call($target,$prop,$proxy);
+        } 
+        return isset($target->$prop);
+    }
+
+    /**
+     * runs handler for the property with the 'unset' action
+     * @param object $target
+     * @param string $prop
+     * @param Proxy|null $proxy
+     * @return void
+     */
+    public function runUnset(object $target,string $prop,?Proxy $proxy=null) :void
+    {
+        $action='unset';
+        if(array_key_exists($prop,$this->properties[$action])){
+            $this->properties[$action][$prop]($target,$prop,$proxy);
+        } else
+        if($this->$action!==null){
+            $call=$this->$action;
+            $call($target,$prop,$proxy);
+        } else {
+            unset($target->$prop);
+        }
+        
+    }
+
+    /**
+     * runs handler for the property with the 'unset' action
+     * @param object $target
+     * @param string $prop
+     * @param array $arguments
+     * @param Proxy|null $proxy
+     * @return mixed
+     */
+    public function runCall(object $target,string $prop,array $arguments,?Proxy $proxy=null)
+    {
+        $action='call';
+        if(array_key_exists($prop,$this->properties[$action])){
+            return $this->properties[$action][$prop]($target,$prop,$arguments,$proxy);
+        } else
+        if($this->$action!==null){
+            $call=$this->$action;
+            return $call($target,$prop,$arguments,$proxy);
+        }
+        return $target->$prop(...$arguments);
+    }
+
+    /**
+     * @param $target
+     * @param Proxy|null $proxy
+     * @return \Traversable
+     * @throws \Exception
+     */
+    public function runIterator($target,?Proxy $proxy=null):\Traversable
+    {
+        if($this->iterator!==null){
+            $call=$this->iterator;
+            return $call($target,$proxy);
+        }
+        if($target instanceof \IteratorAggregate){
+            return $target->getIterator(); 
+        }
+        return new \ArrayIterator($target);
+    }
+}
