@@ -4,6 +4,12 @@ The component creates a proxy object for the observed object.
 Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object .
 A similar principle is implemented in javascript through the Proxy constructor.
 When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.  
+Where the component can be applied:
+- mediator for data validation;
+- access to private data of an object through reflection;
+- dynamic data formation, and generation of other properties;
+- dynamic data requests, for example from a database;
+- other options  .
 
 The following actions exist when accessing the members of an object:  
 set - member entry  
@@ -100,7 +106,8 @@ echo key_exists($target,'_test'); // return false;
 
 ```
 ## Create handlers
-
+If no action handler is assigned to a property, then an action handler for all properties is applied.
+If no action handler is assigned to properties, then standard actions will be applied.
 Example in the constructor
 ```php
 <?php
@@ -160,11 +167,134 @@ $handlers->initProp('set','prop',function ($target,$name,$value,$proxy):void{});
 $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
 $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 ```
-If no action handler is assigned to a property, then an action handler for all properties is applied.
-If no action handler is assigned to properties, then standard actions will be applied.
-Where the component can be applied:
-- mediator for data validation;
-- access to private data of an object through reflection;
-- dynamic data formation, and generation of other properties;
-- dynamic data requests, for example from a database;
-- other options
+## Создание прокси и обработчики в классе
+Обьявляем класс, в котором статические методы будут являться обработчиками.
+```php
+<?php
+
+use Alpa\ProxyObject\HandlersClass;
+class MyHandlers extends HandlersClass{
+    
+};
+```
+Вы можете объвить следующие статические методы в качестве обработчиков:
+get -  запроса значения члена.
+get_{$name_property} -  запроса значения члена  с именем $name_property
+set -  запись значения члена.
+set_{$name_property} - запись значения члена с именем $name_property
+isset - проверка наличия члена.
+isset_{$name_property} - проверка наличия члена с именем $name_property
+unset - удаления члена.
+unset_{$name_property} - удаления члена с именем $name_property
+call - вызов члена
+call_{$name_property} - вызов члена с именем $name_property
+iterator - назначения итератора для foreach
+
+Обьявления методов  для всех дествий однотипно
+```php
+<?php
+use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\HandlersClass;
+class MyHandlers extends HandlersClass{
+    /**
+    * Обработчик запроса значения члена 
+    * @param object $target - наблюдаемый обьект 
+    * @param string $prop - имя члена обьекта
+    * @param null $value_or_args - не имеет значения
+    * @param Proxy $proxy - прокси обьект с которого вызван метод
+    * @return mixed - необходимо возвращать результат
+    */
+    public static function get (object $target,string $prop,$value_or_args=null,Proxy $proxy)
+    {
+       return $target->$prop;
+    }
+    /**
+    * Обработчик присвоения значения члену 
+    * @param object $target - наблюдаемый обьект  
+    * @param string $prop - имя члена обьекта
+    * @param mixed $value_or_args - значение для присвоения
+    * @param Proxy $proxy - прокси обьект с которого вызван метод
+    * @return void 
+    */
+    public static function set (object $target,string $prop,$value_or_args,Proxy $proxy):void
+    {
+      
+    }
+    /**
+    * Обработчик проверки члена
+    * @param object $target - наблюдаемый обьект 
+    * @param string $prop - имя члена обьекта
+    * @param null $value_or_args не имеет значения
+    * @param Proxy $proxy  прокси обьект с которого вызван метод
+    * @return bool
+    */
+    public static function isset (object $target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    {
+        return isset($target->$prop);
+    }
+    
+    /**
+    * Обработчик удаления члена
+    * @param object $target - наблюдаемый обьект 
+    * @param string $prop - имя члена обьекта
+    * @param null $value_or_args не имеет значения
+    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * @return void
+    */
+    public static function unset (object $target,string $prop,$value_or_args=null,Proxy $proxy):void
+    {
+        unset($target->$prop);
+    }    
+    
+    /**
+    * Обработчик вызова члена
+    * @param object $target - наблюдаемый обьект 
+    * @param string $prop - имя члена обьекта
+    * @param array $value_or_args аргументы для вызываемой функции.
+    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * @return mixed
+    */
+    public static function call (object $target,string $prop,array $value_or_args =[],Proxy $proxy)
+    {
+        
+    }
+    
+    /**
+    * формирует итератор для foreach
+    * @param object $target - наблюдаемый обьект 
+    * @param null $prop - не имеет значения
+    * @param null $value_or_args не имеет значения
+    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * @return \Traversable
+    */
+    public static function iterator  (object $target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    {
+        
+    }
+    // далее назначение обработчиков для конкретного члена происходит по шаблону назначения обработчиков всех свойств.
+};
+```
+
+
+Пример
+```php
+<?php
+class MyHandlers extends HandlersClass{
+    protected static function get($target,$prop,$val_or_args=null,Proxy $proxy)
+    {
+        return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
+    }
+    protected static function get_test($target,$prop,$val_or_args=null,Proxy $proxy)
+    {
+        return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
+    }
+};
+$obj=(object)[
+    'test'=>'HELLO',
+    'other'=>'bay'
+];
+$proxy=MyHandlers::getProxy();
+echo $proxy->test; // hello
+echo $proxy->other;// BAY
+```
+
