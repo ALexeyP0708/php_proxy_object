@@ -1,10 +1,12 @@
 <?php
 
 
-namespace Alpa\ProxyObject;
+namespace Alpa\ProxyObject\Handlers;
 
 
-trait HandlersMethods
+use Alpa\ProxyObject\Proxy;
+
+trait TClosures
 {
     protected array $properties=[
         'get'=>[],
@@ -93,10 +95,10 @@ trait HandlersMethods
      * runs handler for the property with the 'get' action
      * @param object $target
      * @param string $prop
-     * @param Proxy|null $proxy
+     * @param Proxy $proxy
      * @return mixed
      */
-    public function runGet(object $target,string $prop,?Proxy $proxy=null)
+    protected function runGet(object $target,string $prop,Proxy $proxy)
     {
         $action='get';
         if(array_key_exists($prop,$this->properties[$action])){
@@ -117,7 +119,7 @@ trait HandlersMethods
      * @param Proxy $proxy
      * @return mixed
      */
-    public function runSet(object $target,string $prop,$value,Proxy $proxy):void
+    protected function runSet(object $target,string $prop,$value,Proxy $proxy):void
     {
         $action='set';
         if(array_key_exists($prop,$this->properties[$action])){
@@ -138,7 +140,7 @@ trait HandlersMethods
      * @param Proxy $proxy
      * @return bool
      */
-    public function runIsset(object $target,string $prop,Proxy $proxy):bool
+    protected function runIsset(object $target,string $prop,Proxy $proxy):bool
     {
         $action='isset';
         if(array_key_exists($prop,$this->properties[$action])){
@@ -158,7 +160,7 @@ trait HandlersMethods
      * @param Proxy|null $proxy
      * @return void
      */
-    public function runUnset(object $target,string $prop,Proxy $proxy) :void
+    protected function runUnset(object $target,string $prop,Proxy $proxy) :void
     {
         $action='unset';
         if(array_key_exists($prop,$this->properties[$action])){
@@ -181,7 +183,7 @@ trait HandlersMethods
      * @param Proxy $proxy
      * @return mixed
      */
-    public function runCall(object $target,string $prop,array $arguments,Proxy $proxy)
+    protected function runCall(object $target,string $prop,array $arguments,Proxy $proxy)
     {
         $action='call';
         if(array_key_exists($prop,$this->properties[$action])){
@@ -200,7 +202,7 @@ trait HandlersMethods
      * @return \Traversable
      * @throws \Exception
      */
-    public function runIterator($target,Proxy $proxy):\Traversable
+    protected function runIterator($target,Proxy $proxy):\Traversable
     {
         if($this->iterator!==null){
             $call=$this->iterator;

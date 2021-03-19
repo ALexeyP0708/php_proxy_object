@@ -1,9 +1,9 @@
 <?php
 namespace Alpa\ProxyObject\Tests;
 
-use Alpa\ProxyObject\Handlers;
+use Alpa\ProxyObject\Handlers\Closures;
 use PHPUnit\Framework\TestCase;
-
+use Alpa\ProxyObject\Proxy;
 class ProxyTest extends TestCase
 {
     public static array $fixtures = [];
@@ -20,7 +20,7 @@ class ProxyTest extends TestCase
        }*/
     public function test_proxy()
     {
-        $handlers=new Handlers();
+        $handlers=new Closures();
         $handlers->init('get',function($target,$name){
             return 'success';
         });
@@ -42,7 +42,7 @@ class ProxyTest extends TestCase
             return $args[0];
         });
         $target=(object)['hello'=>'hello','bay'=>'bay'];
-        $proxy =  new \Alpa\ProxyObject\Proxy($target,$handlers);
+        $proxy =  new Proxy($target,$handlers);
         $this->assertTrue($proxy->test==='success' && $proxy->hello==='success');
         $proxy->test='211421';
         $this->assertTrue($target->test==='success');

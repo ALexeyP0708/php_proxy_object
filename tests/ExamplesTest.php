@@ -3,8 +3,9 @@
 
 namespace Alpa\ProxyObject\Tests;
 
-use \Alpa\ProxyObject\Proxy;
-use \Alpa\ProxyObject\Handlers;
+use Alpa\ProxyObject\Handlers\Instance;
+use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\Handlers\Closures;
 
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +17,7 @@ class ExamplesTest extends TestCase
     {
         parent::setUpBeforeClass();
 
-        $handlers = new Handlers([
+        $handlers = new Closures([
             'get' => function ($target, $name, Proxy $proxy) {
                 $name = '_' . $name;
                 return $target->$name;
@@ -98,12 +99,59 @@ class ExamplesTest extends TestCase
         $this->assertTrue(!isset($target->_test));
     }
 
-    public function test_example_2()
+    public static function test_example_2()
     {
         $target = (object)['_test' => 'test','_test2'=>'test'];
         $proxy = new Proxy($target, static::$fixtures['handlers']);
         foreach($proxy as $key=>$value){
-            $this->assertTrue(property_exists($target,'_'.$key) && $target->{'_'.$key}===$value);
+            static::assertTrue(property_exists($target,'_'.$key) && $target->{'_'.$key}===$value);
         }
+    }
+
+    public static function test_example_3()
+    {
+        $inst=new class () extends Instance
+        {
+            protected static function static_get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+            {
+                return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;
+            }
+            protected static function static_get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+            {
+                return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;
+            }
+        };
+        $obj=(object)[
+            'test'=>'HELLO',
+            'other'=>'bay'
+        ];
+        $proxy=$inst::proxy($obj); 
+        static::assertTrue($proxy->test==='hello');
+        static::assertTrue($proxy->other==='BAY');
+    }
+    public static function test_example_4()
+    {
+        $inst=new class ('Alex ') extends Instance
+        {
+            public function __construct($prefix)
+            {
+                $this->prefix=$prefix;
+            }
+            protected function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+            {
+                return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;
+            }
+            protected function get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+            {
+                return is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;
+            }
+        };
+        $obj=(object)[
+            'test'=>'HELLO',
+            'other'=>'bay'
+        ];
+        $proxy=$inst->newProxy($obj);
+        static::assertTrue($proxy->test==='alex hello');
+        static::assertTrue($proxy->other==='ALEX BAY');
     }
 }

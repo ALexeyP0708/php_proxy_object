@@ -1,18 +1,18 @@
 <?php
-
 namespace Alpa\ProxyObject\Tests;
 
-use \Alpa\ProxyObject\Handlers;
+use PHPUnit\Framework\TestCase;
 use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\Handlers\Closures;
 
-class HandlersTest extends \PHPUnit\Framework\TestCase
+class ClosuresTest extends TestCase
 {
     public static array $fixtures = [];
 
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        $wrapInstance = new class() extends Handlers {
+        $wrapInstance = new class() extends Closures  {
             public array $properties = [
                 'get' => [],
                 'set' => [],
@@ -26,6 +26,30 @@ class HandlersTest extends \PHPUnit\Framework\TestCase
             public ?\Closure $isset = null;
             public ?\Closure $call = null;
             public ?\Closure $iterator = null;
+            public function runGet(object $target, string $prop, Proxy $proxy)
+            {
+                return parent::runGet($target,$prop,$proxy);
+            }
+            public function runSet(object $target, string $prop, $value, Proxy $proxy): void
+            {
+                 parent::runSet($target,$prop,$value,$proxy);
+            }
+            public function  runIsset(object $target, string $prop, Proxy $proxy): bool
+            {
+               return parent::runIsset($target,$prop,$proxy);
+            }
+            public function runUnset(object $target, string $prop, Proxy $proxy): void
+            {
+                 parent::runUnset($target,$prop,$proxy);
+            }
+            public function runCall(object $target, string $prop, array $arguments, Proxy $proxy)
+            {
+                return parent::runCall($target,$prop,$arguments,$proxy);
+            }
+            public function runIterator($target, Proxy $proxy): \Traversable
+            {
+                return parent::runIterator($target,$proxy);
+            }
         };
         self::$fixtures = [
             'wrap_data' => [
@@ -35,22 +59,7 @@ class HandlersTest extends \PHPUnit\Framework\TestCase
             ]
         ];
     }
-
-   /* public static function tearDownAfterClass(): void
-    {
-        parent::tearDownAfterClass();
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }*/
-
+    
     public function test_init()
     {
         $class = self::$fixtures['wrap_data']['class'];
@@ -259,137 +268,6 @@ class HandlersTest extends \PHPUnit\Framework\TestCase
         $self->assertTrue($itr ===$default_itr);
     }
 
-    public static function test_default_action_class()
-    {
-        $inst=new class() extends Handlers{};
-        $HandlersClass= get_class($inst);
-        $target = (object)['test'=>'test'];
-        $proxy = $HandlersClass::getProxy($target);
-        static::assertTrue($proxy->test==='test' && $target->test===$proxy->test);
-        $proxy->test='success';
-        static::assertTrue($target->test==='success');
-        static::assertTrue(isset($proxy->test) && !isset($proxy->no_prop));
-        foreach($proxy as $key=>$value){
-            static::assertTrue(isset($target->$key) && $target->$key===$value);
-        }
-        unset($proxy->test);
-        static::assertTrue(!isset($target->test));
-    }
+   
 
-    public static function test_core_action_class()
-    {
-        $inst=new class() extends Handlers{
-            public static function get(object $target,string $prop,$val=null,Proxy $proxy)
-            {
-                return isset($target->$prop)?$target->$prop.'_':'empty';
-            }
-            public static function set(object $target,string $prop,$val,Proxy $proxy):void
-            {
-                $target->$prop='_'.$val;
-            }
-            public static function isset(object $target,string $prop,$val=null,Proxy $proxy=null):bool
-            {
-                return true;
-            }
-            public static function unset(object $target,string $prop,$val=null,Proxy $proxy=null):void
-            {
-
-            }
-            public static function call(object $target,string $prop, array $args=[],Proxy $proxy=null)
-            {
-                return $args[0];
-            }
-            public static function iterator(object $target,$prop=null,$val=null,Proxy $proxy=null):\Traversable
-            {
-                $props=array_keys(get_object_vars($target));
-                return new class($props,$proxy) implements \Iterator{
-                    protected array $props=[];
-                    protected Proxy $proxy;
-                    protected int $key=0;
-                    public function __construct (array $props,Proxy $proxy)
-                    {
-                        $this->props=$props;
-                        $this->proxy=$proxy;
-                    }
-                    public function rewind()
-                    {
-                        $this->key=0;
-                    }
-                    public function key()
-                    {
-                        return  $this->props[$this->key];
-                    }
-                    public function current()
-                    {
-                        $prop=$this->key();
-                        return $this->proxy->$prop;
-                    }
-                    public function next()
-                    {
-                        $this->key++;
-                    }
-                    public function valid():bool
-                    {
-                        return isset($this->props[$this->key]);
-                    }
-                };
-            }
-        };
-        $HandlersClass= get_class($inst);
-        $target = (object)['test'=>'test'];
-        $proxy = $HandlersClass::getProxy($target);
-        static::assertTrue($proxy->test==='test_' && $target->test!==$proxy->test);
-        static::assertTrue($proxy->test2==='empty');
-        $proxy->test='success';
-        static::assertTrue($target->test==='_success');
-        $proxy->test2='success2';
-        static::assertTrue($target->test2==='_success2');
-        static::assertTrue(isset($proxy->test) && isset($proxy->no_prop));
-        foreach($proxy as $key=>$value){
-            static::assertTrue(isset($target->$key) && $target->$key.'_'===$value);
-        }
-        unset($proxy->test);
-        static::assertTrue(isset($target->test));
-        static::assertTrue($proxy->test('q')==='q' && $proxy->no_test('z')==='z');
-    }
-
-    public static function test_props_action_class()
-    {
-        $inst=new class() extends Handlers{
-            public static function get_test(object $target,string $prop,$val=null,Proxy $proxy)
-            {
-                return $target->$prop.'_';
-            }
-            public static function set_test(object $target,string $prop,$val,Proxy $proxy)
-            {
-                $target->test='_'.$val;
-            }
-            public static function isset_test(object $target,string $prop,$val=null,Proxy $proxy)
-            {
-                return false;
-            }
-            public static function unset_test(object $target,string $prop,$val=null,Proxy $proxy=null)
-            {
-
-            }
-            public static function call_test(object $target,string $prop,$args=[],Proxy $proxy=null)
-            {
-                return $args[0];
-            }
-        };
-        $HandlersClass= get_class($inst);
-        $target = (object)['test'=>'test','test2'=>'test2'];
-        $proxy = $HandlersClass::getProxy($target);
-        static::assertTrue($proxy->test==='test_' && $target->test!==$proxy->test);
-        static::assertTrue($proxy->test2==='test2' && $target->test2===$proxy->test2);
-        $proxy->test='success';
-        static::assertTrue($target->test==='_success');
-        $proxy->test2='success2';
-        static::assertTrue($target->test2==='success2');
-        static::assertTrue(!isset($proxy->test) && isset($proxy->test2));
-        unset($proxy->test);
-        unset($proxy->test2);
-        static::assertTrue(isset($target->test) && !isset($target->test2));
-        static::assertTrue($proxy->test('q')==='q');
-    }
 }
