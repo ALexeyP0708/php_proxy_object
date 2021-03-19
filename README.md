@@ -35,8 +35,8 @@ example 1:
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\HandlersClass;
-class MyHandlers extends HandlersClass{
+use Alpa\ProxyObject\Handlers;
+class MyHandlers extends Handlers{
     protected static function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
@@ -273,8 +273,8 @@ A template for creating action handlers for all members of an object.
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\HandlersClass;
-class MyHandlers extends HandlersClass{
+use Alpa\ProxyObject\Handlers;
+class MyHandlers extends Handlers{
     /**
     * member value query handler
     * @param object $target - observable object
@@ -359,8 +359,8 @@ Example:
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\HandlersClass;
-class MyHandlers extends HandlersClass{
+use Alpa\ProxyObject\Handlers;
+class MyHandlers extends Handlers{
     protected static function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
