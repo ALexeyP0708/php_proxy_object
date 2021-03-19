@@ -534,3 +534,4 @@ $proxy = new Proxy ($target,MyHandlersClass::class);
 $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
 ```
+For each action (set | get | isset | unset | call | iterator) you will need to implement working code.
