@@ -5,62 +5,58 @@ class Proxy implements \IteratorAggregate
 {
     protected object $target;
     /**
-     * @var Handlers|HandlersClass 
+     * @var Handlers|string  if type string then Handlers class name 
      */
     protected  $handlers;
 
     /**
      * Proxy constructor.
      * @param object|callable $target
-     * @param Handlers|HandlersClass $handlers
+     * @param Handlers|string $handlers if type string then Handlers class name
      */
     public function __construct($target, $handlers)
     {
         $this->target=$target;
-        $this->handlers=$handlers;
+        if(
+            is_object($handlers) && $handlers instanceof HandlersContract  ||
+            is_string($handlers) && is_subclass_of($handlers,HandlersContract::class)
+        ) {
+            $this->handlers=$handlers;
+        } else {
+            throw new \Exception('arguments[2]: the object must implement interface'. HandlersContract::class.
+                ', or if class name, then the class must implement interface '.HandlersContract::class);
+        } 
+    }
+    protected function run(string $action,?string $prop=null,$value_or_arguments=null)
+    {
+        if(is_string($this->handlers)){
+            return $this->handlers::static_run($action,$this->target,$prop,$value_or_arguments,$this);
+        } else {
+            return $this->handlers->run($action,$this->target,$prop,$value_or_arguments,$this);
+        }
     }
     public function __get(string $name)
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            return $this->handlers::run('get',$this->target,$name,null,$this);
-        }
-        return $this->handlers->runGet($this->target,$name,$this);
+        return $this->run('get',$name);
     }
     public function __set(string $name,$value)
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            $this->handlers::run('set',$this->target,$name,$value,$this);
-        } else{
-            $this->handlers->runSet($this->target,$name,$value,$this);
-        }
+        $this->run('set',$name,$value);
     }
     public function __isset(string $name) :bool
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            return $this->handlers::run('isset',$this->target,$name,null,$this);
-        }
-        return $this->handlers->runIsset($this->target,$name,$this);
+        return $this->run('isset',$name);
     }
     public function __unset(string $name):void
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            $this->handlers::run('unset',$this->target,$name,null,$this);
-        } else{
-            $this->handlers->runUnset($this->target,$name,$this);
-        }
+         $this->run('unset',$name);
     }
     public function __call($name,$arguments )
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            return $this->handlers::run('call',$this->target,$name,$arguments,$this);
-        }
-        return $this->handlers->runCall($this->target,$name,$arguments,$this);
+        return $this->run('call',$name,$arguments);
     }
     public function getIterator(): \Traversable
     {
-        if(is_subclass_of($this->handlers,HandlersClass::class)){
-            return $this->handlers::run('iterator',$this->target,null,null,$this);
-        }
-        return $this->handlers->runIterator($this->target,$this);
+        return $this->run('iterator');
     }
 }
