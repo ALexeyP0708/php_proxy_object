@@ -18,7 +18,7 @@ add the following settings to the composer.json file of your project
 ```json
 {
   "require": {
-    "alpa/proxy_object": "^1.0.1"
+    "alpa/proxy_object": "^1.0.2"
   },
   "repositories": [
     {
