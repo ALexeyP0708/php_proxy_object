@@ -11,14 +11,70 @@ Where the component can be applied:
 - dynamic data requests, for example from a database;
 - other options  .
 
-The following actions exist when accessing the members of an object:  
-set - member entry  
-get - member value query  
-isset - member check  
-unset - member delete  
-iterator - assigning an iterator when iterating over the members of an object.
+## Install
 
-Usage example:
+The component has not yet been loaded into packagist.
+To install to your project via the composer, add the following settings to the composer.json file of your project
+```json
+"require": {
+	"alpa/proxy_object": "^1.0.0"
+},
+"repositories": [  
+	{  
+        "type": "git",  
+        "url": "https://github.com/ALexeyP0708/php_proxy_object.git"  
+	}  
+]
+```
+then run the command
+`composer update`
+
+## Getting start
+
+example 1:
+```php
+<?php
+use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\HandlersClass;
+class MyHandlers extends HandlersClass{
+    protected static function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    {
+        return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
+    }
+    protected static function get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    {
+        return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
+    }
+};
+$obj=(object)[
+    'test'=>'HELLO',
+    'other'=>'bay'
+];
+$proxy=MyHandlers::getProxy($obj); 
+// or $proxy=new Proxy($obj,MyHandlers::class); 
+echo $proxy->test; // hello
+echo $proxy->other;// BAY
+```
+example 2:
+
+```php
+<?php
+use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\Handlers;
+$handlers = new Handlers();
+$handlers->init('get',function($target,$name,$proxy){
+	return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;      
+});
+$handlers->initProp('get','test',function($target,$name,$proxy){
+	return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;       
+});
+
+$proxy=new Proxy($obj,$handlers); 
+echo $proxy->test; // hello
+echo $proxy->other;// BAY
+```
+
+example 3:
 
 ```php
 <?php
@@ -105,9 +161,29 @@ unset($proxy->test); // unset($target->_test)
 echo key_exists($target,'_test'); // return false;
 
 ```
-## Create handlers
-If no action handler is assigned to a property, then an action handler for all properties is applied.
-If no action handler is assigned to properties, then standard actions will be applied.
+## Create handlers for Proxy object
+
+There are two ways to write handlers:
+- dynamic writing of handlers through closure functions.
+- static writing of handlers through class declaration.
+
+There are two types of handlers:
+- a handler for a specific member of an object;
+- handler for all members of the object;
+
+If no action handler is assigned to a member, then an action handler for all members is applied.
+If no action handler is assigned to members, then standard actions will be applied.
+
+The following actions exist when accessing the members of an object:  
+set - member entry  
+get - member value query  
+isset - member check  
+unset - member delete  
+call - member call
+iterator - assigning an iterator when iterating over the members of an object.
+
+### Dynamic writing of handlers through closure functions
+
 Example in the constructor
 ```php
 <?php
@@ -167,53 +243,56 @@ $handlers->initProp('set','prop',function ($target,$name,$value,$proxy):void{});
 $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
 $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 ```
-## Создание прокси и обработчики в классе
-Обьявляем класс, в котором статические методы будут являться обработчиками.
+
+### Static writing of handlers through class declaration.
+
+Class declaration in which static methods will be handlers.
 ```php
 <?php
 
 use Alpa\ProxyObject\HandlersClass;
-class MyHandlers extends HandlersClass{
+class MyHandlers extends HandlersClass
+{
     
 };
 ```
-Вы можете объвить следующие статические методы в качестве обработчиков:
-get -  запроса значения члена.
-get_{$name_property} -  запроса значения члена  с именем $name_property
-set -  запись значения члена.
-set_{$name_property} - запись значения члена с именем $name_property
-isset - проверка наличия члена.
-isset_{$name_property} - проверка наличия члена с именем $name_property
-unset - удаления члена.
-unset_{$name_property} - удаления члена с именем $name_property
-call - вызов члена
-call_{$name_property} - вызов члена с именем $name_property
-iterator - назначения итератора для foreach
+You can declare the following static methods as handlers:
+get -  member value query;
+get_{$name_property} - value query of a member named $name_property
+set -  member value entry  
+set_{$name_property} - value entry of a member named $name_property
+isset - checking is  set member.
+isset_{$name_property} - checking is set a member named $name_property
+unset - delete a member.
+unset_{$name_property} - removing a member  named $name_property
+call - call member
+call_{$name_property} - call  a member  named $name_property
+iterator - assigning an iterator to foreach
 
-Обьявления методов  для всех дествий однотипно
+A template for creating action handlers for all members of an object.
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\HandlersClass;
 class MyHandlers extends HandlersClass{
     /**
-    * Обработчик запроса значения члена 
-    * @param object $target - наблюдаемый обьект 
-    * @param string $prop - имя члена обьекта
-    * @param null $value_or_args - не имеет значения
-    * @param Proxy $proxy - прокси обьект с которого вызван метод
-    * @return mixed - необходимо возвращать результат
+    * member value query handler
+    * @param object $target - observable object
+    * @param string $prop - object member name  
+    * @param null $value_or_args - irrelevant 
+    * @param Proxy $proxy - the proxy object from which the method is called
+    * @return mixed - it is necessary to return the result
     */
     public static function get (object $target,string $prop,$value_or_args=null,Proxy $proxy)
     {
        return $target->$prop;
     }
     /**
-    * Обработчик присвоения значения члену 
-    * @param object $target - наблюдаемый обьект  
-    * @param string $prop - имя члена обьекта
-    * @param mixed $value_or_args - значение для присвоения
-    * @param Proxy $proxy - прокси обьект с которого вызван метод
+    * member value entry handler 
+    * @param object $target - observable object
+    * @param string $prop - object member name 
+    * @param mixed $value_or_args - value to assign
+    * @param Proxy $proxy - the proxy object from which the method is called
     * @return void 
     */
     public static function set (object $target,string $prop,$value_or_args,Proxy $proxy):void
@@ -221,11 +300,11 @@ class MyHandlers extends HandlersClass{
       
     }
     /**
-    * Обработчик проверки члена
-    * @param object $target - наблюдаемый обьект 
-    * @param string $prop - имя члена обьекта
-    * @param null $value_or_args не имеет значения
-    * @param Proxy $proxy  прокси обьект с которого вызван метод
+    * checking is  set member handler
+    * @param object $target - observable object
+    * @param string $prop - object member name 
+    * @param null $value_or_args - irrelevant 
+    * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
     public static function isset (object $target,string $prop,$value_or_args=null,Proxy $proxy):bool
@@ -234,11 +313,11 @@ class MyHandlers extends HandlersClass{
     }
     
     /**
-    * Обработчик удаления члена
-    * @param object $target - наблюдаемый обьект 
-    * @param string $prop - имя члена обьекта
-    * @param null $value_or_args не имеет значения
-    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * member delete handler 
+    * @param object $target - observable object
+    * @param string $prop -  object member name 
+    * @param null $value_or_args -irrelevant 
+    * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
     public static function unset (object $target,string $prop,$value_or_args=null,Proxy $proxy):void
@@ -247,11 +326,11 @@ class MyHandlers extends HandlersClass{
     }    
     
     /**
-    * Обработчик вызова члена
-    * @param object $target - наблюдаемый обьект 
-    * @param string $prop - имя члена обьекта
-    * @param array $value_or_args аргументы для вызываемой функции.
-    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * Member call handler
+    * @param object $target - observable object
+    * @param string $prop -  object member name 
+    * @param array $value_or_args - arguments to the called function.
+    * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
     public static function call (object $target,string $prop,array $value_or_args =[],Proxy $proxy)
@@ -260,31 +339,33 @@ class MyHandlers extends HandlersClass{
     }
     
     /**
-    * формирует итератор для foreach
-    * @param object $target - наблюдаемый обьект 
-    * @param null $prop - не имеет значения
-    * @param null $value_or_args не имеет значения
-    * @param Proxy $proxy прокси обьект с которого вызван метод
+    * creates an iterator for foreach
+    * @param object $target - observable object
+    * @param null $prop - irrelevant 
+    * @param null $value_or_args -irrelevant 
+    * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
     public static function iterator  (object $target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
     {
         
     }
-    // далее назначение обработчиков для конкретного члена происходит по шаблону назначения обработчиков всех свойств.
+    
 };
 ```
 
-
-Пример
+Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.
+Example:
 ```php
 <?php
+use Alpa\ProxyObject\Proxy;
+use Alpa\ProxyObject\HandlersClass;
 class MyHandlers extends HandlersClass{
-    protected static function get($target,$prop,$val_or_args=null,Proxy $proxy)
+    protected static function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
     }
-    protected static function get_test($target,$prop,$val_or_args=null,Proxy $proxy)
+    protected static function get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
     }
@@ -293,8 +374,9 @@ $obj=(object)[
     'test'=>'HELLO',
     'other'=>'bay'
 ];
-$proxy=MyHandlers::getProxy();
+$proxy=MyHandlers::getProxy($obj); 
+// or $proxy=new Proxy($obj,MyHandlers::class); 
+
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
-
