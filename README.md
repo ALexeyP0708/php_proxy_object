@@ -381,9 +381,9 @@ echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
 
-## Создание классы обработчиков
+## Creating handler classes
 
-конструктор класса `Alpa\ProxyObject\Proxy` может принимать в качестве обработчиков, любой обьект или класс реализующий интерфейс `Alpa\ProxyObject\HandlersContract`.
+The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the` Alpa \ ProxyObject \ HandlersContract` interface.
 ```php
 <?php
 use Alpa\ProxyObject\HandlersContract;
