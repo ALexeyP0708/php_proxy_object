@@ -1,6 +1,6 @@
 {
   "name": "alpa/proxy_object",
-  "description": "Creates a proxy object and assigns getter / setter handlers to the object's properties when accessing them.",
+  "description": "Creates a proxy object and assigns getter / setter handlers to the object's members when accessing them.",
   "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": "^7.4"
+    "php": "^7.4 ^8.0"
   },
   "autoload": {
     "psr-4": {
