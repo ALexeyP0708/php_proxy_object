@@ -1,15 +1,15 @@
 # ProxyObject
 
-The component creates a proxy object for the observed object.
-Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object .
-A similar principle is implemented in javascript through the Proxy constructor.
+The component creates a proxy object for the observed object.  
+Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object .  
+A similar principle is implemented in javascript through the Proxy constructor.  
 When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.  
-Where the component can be applied:
-- mediator for data validation;
-- access to private data of an object through reflection;
-- dynamic data formation, and generation of other properties;
-- dynamic data requests, for example from a database;
-- other options  .
+Where the component can be applied:  
+- mediator for data validation;  
+- access to private data of an object through reflection;  
+- dynamic data formation, and generation of other properties;  
+- dynamic data requests, for example from a database;  
+- other options.  
 
 ## Install
 
@@ -163,28 +163,28 @@ echo key_exists($target,'_test'); // return false;
 ```
 ## Create handlers for Proxy object
 
-There are two ways to write handlers:
-- dynamic writing of handlers through closure functions.
-- static writing of handlers through class declaration.
+There are two ways to write handlers:  
+- dynamic writing of handlers through closure functions.  
+- static writing of handlers through class declaration.  
 
-There are two types of handlers:
-- a handler for a specific member of an object;
-- handler for all members of the object;
+There are two types of handlers:  
+- a handler for a specific member of an object;  
+- handler for all members of the object;  
 
 If no action handler is assigned to a member, then an action handler for all members is applied.
 If no action handler is assigned to members, then standard actions will be applied.
 
 The following actions exist when accessing the members of an object:  
-set - member entry  
-get - member value query  
-isset - member check  
-unset - member delete  
-call - member call
-iterator - assigning an iterator when iterating over the members of an object.
+- set - member entry;   
+- get - member value query;    
+- isset - member check;    
+- unset - member delete;  
+- call - member call;  
+- iterator - assigning an iterator when iterating over the members of an object.  
 
-### Dynamic writing of handlers through closure functions
+### Dynamic writing of handlers through closure functions  
 
-Example in the constructor
+Example in the constructor  
 ```php
 <?php
 $handlers=new \Alpa\ProxyObject\Handlers([
@@ -200,8 +200,8 @@ $handlers=new \Alpa\ProxyObject\Handlers([
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
 ```
-Handlers can be assigned outside of the constructor.
-An example of assigning handlers via the Handlers :: init method
+Handlers can be assigned outside of the constructor.  
+An example of assigning handlers via the Handlers :: init method  
 ```php
 <?php
 
@@ -213,7 +213,7 @@ $handlers->init('isset',function($target,$prop,$proxy):bool{});
 $handlers->init('iterator',function($target,$prop,$proxy):\Traversable{});
 ```
 
-An example of assigning handlers for a specific property
+An example of assigning handlers for a specific property  
 
 ```php
 <?php
@@ -246,7 +246,7 @@ $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 
 ### Static writing of handlers through class declaration.
 
-Class declaration in which static methods will be handlers.
+Class declaration in which static methods will be handlers.  
 ```php
 <?php
 
@@ -257,17 +257,17 @@ class MyHandlers extends HandlersClass
 };
 ```
 You can declare the following static methods as handlers:
-get -  member value query;
-get_{$name_property} - value query of a member named $name_property
-set -  member value entry  
-set_{$name_property} - value entry of a member named $name_property
-isset - checking is  set member.
-isset_{$name_property} - checking is set a member named $name_property
-unset - delete a member.
-unset_{$name_property} - removing a member  named $name_property
-call - call member
-call_{$name_property} - call  a member  named $name_property
-iterator - assigning an iterator to foreach
+- get -  member value query;  
+- get_{$name_property} - value query of a member named $name_property;  
+- set -  member value entry;    
+- set_{$name_property} - value entry of a member named $name_property;  
+- isset - checking is  set member;  
+- isset_{$name_property} - checking is set a member named $name_property;  
+- unset - delete a member;  
+- unset_{$name_property} - removing a member  named $name_property;  
+- call - call member;  
+- call_{$name_property} - call  a member  named $name_property;  
+- iterator - assigning an iterator to foreach;  
 
 A template for creating action handlers for all members of an object.
 ```php
@@ -354,7 +354,7 @@ class MyHandlers extends HandlersClass{
 };
 ```
 
-Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.
+Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.  
 Example:
 ```php
 <?php
