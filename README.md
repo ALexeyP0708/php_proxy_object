@@ -380,3 +380,26 @@ $proxy=MyHandlers::getProxy($obj);
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
+
+## Создание классы обработчиков
+
+конструктор класса `Alpa\ProxyObject\Proxy` может принимать в качестве обработчиков, любой обьект или класс реализующий интерфейс `Alpa\ProxyObject\HandlersContract`.
+```php
+<?php
+use Alpa\ProxyObject\HandlersContract;
+class MyHandlersClass implements  HandlersContract
+{
+	public function run(string $action,object $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	{
+	}
+	public static  function static_run(string $action,object $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	{
+	}
+}
+$target=(object)[];
+$proxy = new Proxy ($target,MyHandlersClass::class);
+$handlers=new MyHandlersClass ();
+$proxy = new Proxy ($target,$handlers);
+```
+
+ 
