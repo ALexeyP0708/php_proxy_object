@@ -52,7 +52,7 @@ class Proxy implements \IteratorAggregate
 
     public function __isset(string $name): bool
     {
-        return $this->run('isset', $name);
+        return (bool)$this->run('isset', $name);
     }
 
     public function __unset(string $name): void
@@ -67,6 +67,11 @@ class Proxy implements \IteratorAggregate
 
     public function getIterator(): \Traversable
     {
-        return $this->run('iterator');
+        $iterator=$this->run('iterator');
+        // If something returns non-null and does not implement \Traversable then it should throw an Exception.
+        if($iterator !==null ){
+            return $iterator;
+        }
+        return new \ArrayIterator([]);
     }
 }
