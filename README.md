@@ -1,20 +1,24 @@
 # ProxyObject
 
 The component creates a proxy object for the observed object.  
-Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object .  
+Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable
+object .  
 A similar principle is implemented in javascript through the Proxy constructor.  
-When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.  
-Where the component can be applied:  
-- mediator for data validation;  
-- access to private data of an object through reflection;  
-- dynamic data formation, and generation of other properties;  
-- dynamic data requests, for example from a database;  
-- other options.  
+When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be
+invoked.  
+Where the component can be applied:
+
+- mediator for data validation;
+- access to private data of an object through reflection;
+- dynamic data formation, and generation of other properties;
+- dynamic data requests, for example from a database;
+- other options.
 
 ## Install
+
 `composer require alpa/proxy_object`
-OR
-add the following settings to the composer.json file of your project
+OR add the following settings to the composer.json file of your project
+
 ```json
 {
   "require": {
@@ -28,12 +32,14 @@ add the following settings to the composer.json file of your project
   ]
 }
 ```
+
 then run the command
 `composer update`
 
 ## Getting start
 
 example 1:
+
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
@@ -42,11 +48,11 @@ class MyHandlers extends Handlers\Instance
 {
     protected static function static_get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
-        return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
+        return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;        
     }
     protected static function static_get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
-        return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
+        return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;        
     }
 }
 $obj=(object)[
@@ -58,7 +64,9 @@ $proxy=MyHandlers::proxy($obj);
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
+
 example 2:
+
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
@@ -90,6 +98,7 @@ echo $proxy->test; // alex hello
 echo $proxy->other;// ALEX BAY
 
 ```
+
 example 3:
 
 ```php
@@ -98,10 +107,10 @@ use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\Handlers;
 $handlers = new Handlers\Closures();
 $handlers->init('get',function($target,$prop,$proxy){
-	return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;      
+	return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;      
 });
 $handlers->initProp('get','test',function($target,$prop,$proxy){
-	return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;       
+	return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;       
 });
 $obj=(object)[
     'test'=>'HELLO',
@@ -199,30 +208,35 @@ unset($proxy->test); // unset($target->_test)
 echo key_exists($target,'_test'); // return false;
 
 ```
+
 ## Create handlers for Proxy object
 
-There are two ways to write handlers:  
-- dynamic writing of handlers through closure functions.  
--  writing of handlers through class declaration.  
+There are two ways to write handlers:
 
-There are two types of handlers:  
-- a handler for a specific member of an object;  
-- handler for all members of the object;  
+- dynamic writing of handlers through closure functions.
+- writing of handlers through class declaration.
 
-If no action handler is assigned to a member, then an action handler for all members is applied.
-If no action handler is assigned to members, then standard actions will be applied.
+There are two types of handlers:
 
-The following actions exist when accessing the members of an object:  
-- set - member entry;   
-- get - member value query;    
-- isset - member check;    
-- unset - member delete;  
-- call - member call;  
-- iterator - assigning an iterator when iterating over the members of an object.  
+- a handler for a specific member of an object;
+- handler for all members of the object;
 
-### Dynamic writing of handlers through closure functions  
+If no action handler is assigned to a member, then an action handler for all members is applied. If no action handler is
+assigned to members, then standard actions will be applied.
 
-Example in the constructor  
+The following actions exist when accessing the members of an object:
+
+- set - member entry;
+- get - member value query;
+- isset - member check;
+- unset - member delete;
+- call - member call;
+- iterator - assigning an iterator when iterating over the members of an object.
+
+### Dynamic writing of handlers through closure functions
+
+Example in the constructor
+
 ```php
 <?php
 $handlers=new \Alpa\ProxyObject\Handlers\Closures([
@@ -238,8 +252,10 @@ $handlers=new \Alpa\ProxyObject\Handlers\Closures([
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
 ```
+
 Handlers can be assigned outside of the constructor.  
-An example of assigning handlers via the Handlers :: init method  
+An example of assigning handlers via the Handlers :: init method
+
 ```php
 <?php
 
@@ -251,7 +267,7 @@ $handlers->init('isset',function($target,$prop,$proxy):bool{});
 $handlers->init('iterator',function($target,$prop,$proxy):\Traversable{});
 ```
 
-An example of assigning handlers for a specific property  
+An example of assigning handlers for a specific property
 
 ```php
 <?php
@@ -284,7 +300,8 @@ $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 
 ### Static writing of handlers through class declaration.
 
-Class declaration in which static methods will be handlers.  
+Class declaration in which static methods will be handlers.
+
 ```php
 <?php
 
@@ -296,32 +313,34 @@ class MyHandlers extends Instance
 ```
 
 You can declare the following instance methods as handlers :
-- get -  member value query;  
-- get_{$name_property} - value query of a member named $name_property;  
-- set -  member value entry;    
-- set_{$name_property} - value entry of a member named $name_property;  
-- isset - checking is  set member;  
-- isset_{$name_property} - checking is set a member named $name_property;  
-- unset - delete a member;  
-- unset_{$name_property} - removing a member  named $name_property;  
-- call - call member;  
-- call_{$name_property} - call  a member  named $name_property;  
-- iterator - assigning an iterator to foreach;  
-  
+
+- get - member value query;
+- get_{$name_property} - value query of a member named $name_property;
+- set - member value entry;
+- set_{$name_property} - value entry of a member named $name_property;
+- isset - checking is set member;
+- isset_{$name_property} - checking is set a member named $name_property;
+- unset - delete a member;
+- unset_{$name_property} - removing a member named $name_property;
+- call - call member;
+- call_{$name_property} - call a member named $name_property;
+- iterator - assigning an iterator to foreach;
+
   You can declare the following static methods as handlers :
-- static_get -  member value query;
+- static_get - member value query;
 - static_get_{$name_property} - value query of a member named $name_property;
-- static_set -  member value entry;
+- static_set - member value entry;
 - static_set_{$name_property} - value entry of a member named $name_property;
-- static_isset - checking is  set member;
+- static_isset - checking is set member;
 - static_isset_{$name_property} - checking is set a member named $name_property;
 - static_unset - delete a member;
-- static_unset_{$name_property} - removing a member  named $name_property;
+- static_unset_{$name_property} - removing a member named $name_property;
 - static_call - call member;
-- static_call_{$name_property} - call  a member  named $name_property;
+- static_call_{$name_property} - call a member named $name_property;
 - static_iterator - assigning an iterator to foreach;
 
 A template for creating action handlers for all members of an object.
+
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
@@ -484,9 +503,10 @@ class MyHandlers extends Handlers\Instance
 };
 ```
 
-Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.  
+Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.
 
 Example:
+
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
@@ -515,7 +535,9 @@ echo $proxy->other;// BAY
 
 ## Creating handler classes
 
-The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the` Alpa \ ProxyObject \ Handlers \ IContract` interface.
+The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements
+the` Alpa \ ProxyObject \ Handlers \ IContract` interface.
+
 ```php
 <?php
 use Alpa\ProxyObject\Handlers\IContract;
@@ -534,4 +556,5 @@ $proxy = new Proxy ($target,MyHandlersClass::class);
 $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
 ```
+
 For each action (set | get | isset | unset | call | iterator) you will need to implement working code.

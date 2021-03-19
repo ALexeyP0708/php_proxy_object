@@ -67,9 +67,9 @@ class Proxy implements \IteratorAggregate
 
     public function getIterator(): \Traversable
     {
-        $iterator=$this->run('iterator');
+        $iterator = $this->run('iterator');
         // If something returns non-null and does not implement \Traversable then it should throw an Exception.
-        if($iterator !==null ){
+        if ($iterator !== null) {
             return $iterator;
         }
         return new \ArrayIterator([]);

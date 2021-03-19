@@ -28,7 +28,7 @@ class ExamplesTest extends TestCase
             },
             'isset' => function ($target, $name, Proxy $proxy): bool {
                 $name = '_' . $name;
-                return property_exists($target,$name) ;
+                return property_exists($target, $name);
             },
             'unset' => function ($target, $name, Proxy $proxy): void {
                 $name = '_' . $name;
@@ -68,7 +68,7 @@ class ExamplesTest extends TestCase
                     public function rewind()
                     {
                         $this->key = 0;
-                        
+
                         $this->keys = array_keys(get_object_vars($this->target));
                     }
 
@@ -101,57 +101,59 @@ class ExamplesTest extends TestCase
 
     public static function test_example_2()
     {
-        $target = (object)['_test' => 'test','_test2'=>'test'];
+        $target = (object)['_test' => 'test', '_test2' => 'test'];
         $proxy = new Proxy($target, static::$fixtures['handlers']);
-        foreach($proxy as $key=>$value){
-            static::assertTrue(property_exists($target,'_'.$key) && $target->{'_'.$key}===$value);
+        foreach ($proxy as $key => $value) {
+            static::assertTrue(property_exists($target, '_' . $key) && $target->{'_' . $key} === $value);
         }
     }
 
     public static function test_example_3()
     {
-        $inst=new class () extends Instance
-        {
-            protected static function static_get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+        $inst = new class () extends Instance {
+            protected static function static_get(object $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
-                return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;
+                return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
             }
-            protected static function static_get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+
+            protected static function static_get_test(object $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
-                return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;
+                return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;
             }
         };
-        $obj=(object)[
-            'test'=>'HELLO',
-            'other'=>'bay'
+        $obj = (object)[
+            'test' => 'HELLO',
+            'other' => 'bay'
         ];
-        $proxy=$inst::proxy($obj); 
-        static::assertTrue($proxy->test==='hello');
-        static::assertTrue($proxy->other==='BAY');
+        $proxy = $inst::proxy($obj);
+        static::assertTrue($proxy->test === 'hello');
+        static::assertTrue($proxy->other === 'BAY');
     }
+
     public static function test_example_4()
     {
-        $inst=new class ('Alex ') extends Instance
-        {
+        $inst = new class ('Alex ') extends Instance {
             public function __construct($prefix)
             {
-                $this->prefix=$prefix;
+                $this->prefix = $prefix;
             }
-            protected function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+
+            protected function get(object $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
-                return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;
+                return is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
             }
-            protected function get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+
+            protected function get_test(object $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
-                return is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;
+                return is_string($target->$prop) ? strtolower($this->prefix . $target->$prop) : $target->$prop;
             }
         };
-        $obj=(object)[
-            'test'=>'HELLO',
-            'other'=>'bay'
+        $obj = (object)[
+            'test' => 'HELLO',
+            'other' => 'bay'
         ];
-        $proxy=$inst->newProxy($obj);
-        static::assertTrue($proxy->test==='alex hello');
-        static::assertTrue($proxy->other==='ALEX BAY');
+        $proxy = $inst->newProxy($obj);
+        static::assertTrue($proxy->test === 'alex hello');
+        static::assertTrue($proxy->other === 'ALEX BAY');
     }
 }
