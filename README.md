@@ -15,12 +15,10 @@ Should not break backward compatibility with version "Y".
 
 
 ## Description 
-The component creates a proxy object for the observed object.  
-Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable
-object .   
+The component creates a proxy object for the observed object or class.  
+Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object or class .   
 A similar principle is implemented in javascript through the Proxy constructor.   
-When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be
-invoked.   
+When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.   
 
 Where the component can be applied:
 - mediator for data validation;
@@ -216,13 +214,13 @@ There are two types of handlers:
 - a handler for a specific member of an object;
 - handler for all members of the object;
 
-If no action handler is assigned to a member, then an action handler for all members is applied.   
-If no action handler is assigned to members, then standard actions will be applied.
+If action handler is no assigned to a member, then an action handler for all members is applied.   
+If  action handler is no assigned to members, then standard actions will be applied.
 
 The following actions exist when accessing the members of an object:
-- set - member entry;
+- set - member value entry;
 - get - member value query;
-- isset - member check;
+- isset - member check  ;
 - unset - member delete;
 - call - member call;
 - iterator - assigning an iterator when iterating over the members of an object.
@@ -546,6 +544,7 @@ class MyClass{
 }
 class MyHandlers extends Instance{}
 $proxy=MyHandlers::proxy(MyClass::class);
+// or $proxy = new Proxy(MyClass::class,MyHandlers::class);
 echo $proxy->prop1;// 'Hello';
 $proxy->prop2='BAY';
 echo $MyClass::$prop2;// 'BAY';
@@ -566,8 +565,7 @@ foreach($proxy as $key=>$value){
 
 ## Creating handler classes
 
-The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements
-the` Alpa \ ProxyObject \ Handlers \ IContract` interface.
+The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the ` Alpa \ ProxyObject \ Handlers \ IContract` interface.
 
 ```php
 <?php
