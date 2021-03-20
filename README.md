@@ -576,7 +576,7 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 			if($this->is_methods){
 				return method_exists($target,$prop);
 			}
-			return property_exists($target,$prop)
+			return property_exists($target,$prop);
 		}
 	}
 	class TargetClass
