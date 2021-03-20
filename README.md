@@ -2,12 +2,12 @@
 
 The component creates a proxy object for the observed object.  
 Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable
-object .  
-A similar principle is implemented in javascript through the Proxy constructor.  
+object .   
+A similar principle is implemented in javascript through the Proxy constructor.   
 When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be
-invoked.  
-Where the component can be applied:
+invoked.   
 
+Where the component can be applied:
 - mediator for data validation;
 - access to private data of an object through reflection;
 - dynamic data formation, and generation of other properties;
@@ -16,27 +16,10 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object`
-OR add the following settings to the composer.json file of your project
+`composer require alpa/proxy_object`  
 
-```json
-{
-  "require": {
-    "alpa/proxy_object": "^1.0.2"
-  },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/ALexeyP0708/php_proxy_object.git"
-    }
-  ]
-}
-```
 
-then run the command
-`composer update`
-
-## Getting start
+## Getting started
 
 example 1:
 
@@ -212,26 +195,24 @@ echo key_exists($target,'_test'); // return false;
 ## Create handlers for Proxy object
 
 There are two ways to write handlers:
-
 - dynamic writing of handlers through closure functions.
 - writing of handlers through class declaration.
 
 There are two types of handlers:
-
 - a handler for a specific member of an object;
 - handler for all members of the object;
 
-If no action handler is assigned to a member, then an action handler for all members is applied. If no action handler is
-assigned to members, then standard actions will be applied.
+If no action handler is assigned to a member, then an action handler for all members is applied.   
+If no action handler is assigned to members, then standard actions will be applied.
 
 The following actions exist when accessing the members of an object:
-
 - set - member entry;
 - get - member value query;
 - isset - member check;
 - unset - member delete;
 - call - member call;
 - iterator - assigning an iterator when iterating over the members of an object.
+
 
 ### Dynamic writing of handlers through closure functions
 
@@ -298,6 +279,7 @@ $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
 $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 ```
 
+
 ### Static writing of handlers through class declaration.
 
 Class declaration in which methods will be handlers.
@@ -313,7 +295,6 @@ class MyHandlers extends Instance
 ```
 
 You can declare the following instance methods as handlers :
-
 - get - member value query;
 - get_{$name_property} - value query of a member named $name_property;
 - set - member value entry;
@@ -325,6 +306,7 @@ You can declare the following instance methods as handlers :
 - call - call member;
 - call_{$name_property} - call a member named $name_property;
 - iterator - assigning an iterator to foreach;
+
 
   You can declare the following static methods as handlers :
 - static_get - member value query;
@@ -339,8 +321,8 @@ You can declare the following instance methods as handlers :
 - static_call_{$name_property} - call a member named $name_property;
 - static_iterator - assigning an iterator to foreach;
 
-A template for creating action handlers for all members of an object.
 
+A template for creating action handlers for all members of an object.
 ```php
 <?php
 use Alpa\ProxyObject\Proxy;
@@ -532,6 +514,7 @@ $proxy=MyHandlers::proxy($obj);
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
+
 
 ## Creating handler classes
 
