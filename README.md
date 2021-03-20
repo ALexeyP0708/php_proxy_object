@@ -1,5 +1,20 @@
 # ProxyObject
+## Warning
+From version 1.0.0 to version 1.1.0 is experimental development, where the API will be subject to modification.
+See the tag description on GitHub for version compatibility. 
+When including a component in a project, specify a specific version. 
+The description of the api for a specific version can be found in the commit version.
 
+### Versions
+template: x.y.z 
+x - version with major changes. Has no backward compatibility 
+y - Versions with modifications that do not break backward compatibility 
+z - Versions for adding new features, changing APIs, refactoring and fixing bugs. 
+Should not break backward compatibility with version "Y".
+
+
+
+##
 The component creates a proxy object for the observed object.  
 Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable
 object .   
