@@ -29,11 +29,11 @@ use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance 
 {
-    protected static function static_get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get( $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;        
     }
-    protected static function static_get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get_test( $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;        
     }
@@ -60,11 +60,11 @@ class MyHandlers extends Handlers\Instance
     {
         $this->prefix=$prefix;
     }
-    protected function get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected function get( $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;        
     }
-    protected function get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected function get_test( $target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;        
     }
@@ -331,154 +331,154 @@ class MyHandlers extends Handlers\Instance
 {
     /**
     * member value query handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name  
     * @param null $value_or_args - irrelevant 
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    public function get (object $target,string $prop,$value_or_args=null,Proxy $proxy)
+    public function get ($target,string $prop,$value_or_args=null,Proxy $proxy)
     {
-       return $target->$prop;
+       return parent::get($target,$prop,$value_or_args,$proxy);
     }    
 
     /**
     * member value entry handler 
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name 
     * @param mixed $value_or_args - value to assign
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return void 
     */
-    public function set (object $target,string $prop,$value_or_args,Proxy $proxy):void
+    public function set ( $target,string $prop,$value_or_args,Proxy $proxy):void
     {
-      
+        parent::set($target,$prop,$value_or_args,$proxy);
     }
     /**
     * checking is  set member handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name 
     * @param null $value_or_args - irrelevant 
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    public function isset (object $target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    public function isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
     {
-        return isset($target->$prop);
+        return parent::isset($target,$prop,$value_or_args,$proxy);
     }
     
     /**
     * member delete handler 
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop -  object member name 
     * @param null $value_or_args -irrelevant 
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    public function unset (object $target,string $prop,$value_or_args=null,Proxy $proxy):void
+    public function unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
     {
-        unset($target->$prop);
+        parent::unset($target,$prop,$value_or_args,$proxy);
     }    
     
     /**
     * Member call handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop -  object member name 
     * @param array $value_or_args - arguments to the called function.
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    public function call (object $target,string $prop,array $value_or_args =[],Proxy $proxy)
+    public function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
     {
-        return $target->$prop(...$value_or_args);
+        return parent::call($target,$prop,$value_or_args,$proxy);
     }
     
     /**
     * creates an iterator for foreach
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param null $prop - irrelevant 
     * @param null $value_or_args -irrelevant 
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
-    public function iterator  (object $target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    public function iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
     {
-        return parent::iterator();
+        return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
     
     /**
     * member value query handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name  
     * @param null $value_or_args - irrelevant 
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    public static function static_get (object $target,string $prop,$value_or_args=null,Proxy $proxy)
+    public static function static_get ($target,string $prop,$value_or_args=null,Proxy $proxy)
     {
-       return $target->$prop;
+       return  parent::static_get($target,$prop,$value_or_args,$proxy);
     }    
     
     /**
     * member value entry handler 
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name 
     * @param mixed $value_or_args - value to assign
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return void 
     */
-    public static function static_set (object $target,string $prop,$value_or_args,Proxy $proxy):void
+    public static function static_set ($target,string $prop,$value_or_args,Proxy $proxy):void
     {
-      
+        parent::static_set($target,$prop,$value_or_args,$proxy);
     }
     /**
     * checking is  set member handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop - object member name 
     * @param null $value_or_args - irrelevant 
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    public static function static_isset (object $target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    public static function static_isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
     {
-        return isset($target->$prop);
+        return parent::static_isset($target,$prop,$value_or_args,$proxy);
     }
     
     /**
     * member delete handler 
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop -  object member name 
     * @param null $value_or_args -irrelevant 
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    public static function static_unset (object $target,string $prop,$value_or_args=null,Proxy $proxy):void
+    public static function static_unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
     {
-        unset($target->$prop);
+        parent::static_unset($target,$prop,$value_or_args,$proxy);
     }    
     
     /**
     * Member call handler
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param string $prop -  object member name 
     * @param array $value_or_args - arguments to the called function.
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    public static function static_call (object $target,string $prop,array $value_or_args =[],Proxy $proxy)
+    public static function static_call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
     {
-        return $target->prop(...$value_or_args);
+        return parent::static_call($target,$prop,$value_or_args,$proxy);
     }
     
     /**
     * creates an iterator for foreach
-    * @param object $target - observable object
+    * @param object|string $target - observable object or class.
     * @param null $prop - irrelevant 
     * @param null $value_or_args -irrelevant 
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
-    public static function static_iterator  (object $target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    public static function static_iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
     {
         return parent::static_iterator($target,$prop,$value_or_args,$proxy);
     }
@@ -494,11 +494,11 @@ Example:
 use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance {
-    protected static function static_get(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get($target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
     }
-    protected static function static_get_test(object $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get_test($target,string $prop,$val_or_args=null,Proxy $proxy)
     {
         // $prop==='test';
         return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
@@ -527,10 +527,10 @@ use Alpa\ProxyObject\Handlers\IContract;
 use Alpa\ProxyObject\Proxy;
 class MyHandlersClass implements  IContract
 {
-	public function run(string $action,object $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	public function run(string $action, $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
 	{
 	}
-	public static  function static_run(string $action,object $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	public static  function static_run(string $action, $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
 	{
 	}
 }
@@ -542,7 +542,7 @@ $proxy = new Proxy ($target,$handlers);
 
 For each action (set | get | isset | unset | call | iterator) you will need to implement working code.
 
-## Limitations
+## Difficulties
 
 For a member of a proxy object, it doesn't make sense to apply checks such as `property_exists` or` method_exists` or similar, since they will be applied directly to the proxy object. Therefore, when working with a proxy, always use the `isset` check.  If you have complex logic where you need to check both properties and methods, then it is recommended to separate the logic for working with properties and the logic for working with methods.
 
@@ -556,9 +556,9 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 		public function __construct(bool $is_methods=false){
 			$this->is_methods=$is_methods;
 		}
-		protected function isset (object $target,string $prop,$val=null,Proxy $proxy):bool
+		protected function isset ( $target,string $prop,$val=null,Proxy $proxy):bool
 		{
-			if($is_methods){
+			if($this->is_methods){
 				return method_exists($target,$prop);
 			}
 			return property_exists($target,$prop)
@@ -570,7 +570,7 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 		public function method(){}
 	}
 	$inst=new TargetClass();
-	$proxyProps=MyHandlers::proxy($inst,new new  MyHandlers());
-	$proxyMethods=MyHandlers::proxy($inst,new new  MyHandlers(true));  
+	$proxyProps=MyHandlers::proxy($inst, new  MyHandlers());
+	$proxyMethods=MyHandlers::proxy($inst, new  MyHandlers(true));  
 
 ```  

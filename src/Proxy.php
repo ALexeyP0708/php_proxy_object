@@ -6,31 +6,45 @@ use Alpa\ProxyObject\Handlers\IContract;
 
 class Proxy implements \IteratorAggregate
 {
-    protected object $target;
     /**
-     * @var Handlers|string  if type string then Handlers class name
+     * @var object|string 
+     */
+    protected  $target;
+    /**
+     * @var IContract|string  if type string then Handlers class name
      */
     protected $handlers;
 
     /**
      * Proxy constructor.
-     * @param object|callable $target
-     * @param Handlers|string $handlers if type string then Handlers class name
+     * @param object|string $target if type string then then this class name
+     * @param IContract|string $handlers if type string then Handlers class name
      */
     public function __construct($target, $handlers)
     {
-        $this->target = $target;
+        if(is_object($target) || is_string($target) && class_exists($target)){
+            $this->target = $target;    
+        } else {
+            throw new \Exception('argument 1: must be an object or class name');
+        }
+        
         if (
             is_object($handlers) && $handlers instanceof IContract ||
             is_string($handlers) && is_subclass_of($handlers, IContract::class)
         ) {
             $this->handlers = $handlers;
         } else {
-            throw new \Exception('arguments[2]: the object must implement interface' . IContract::class .
+            throw new \Exception('argument 2: the object must implement interface' . IContract::class .
                 ', or if class name, then the class must implement interface ' . IContract::class);
         }
     }
 
+    /**
+     * @param string $action get|set|isset|unset|call|iterator
+     * @param string|null $prop The "iterator" action does not pass this argument
+     * @param null $value_or_arguments the value from the "set" and "call" actions
+     * @return mixed  returned result of "get" "isset" "call" actions. 
+     */
     protected function run(string $action, ?string $prop = null, $value_or_arguments = null)
     {
         if (is_string($this->handlers)) {

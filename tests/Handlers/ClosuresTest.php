@@ -28,27 +28,27 @@ class ClosuresTest extends TestCase
             public ?\Closure $call = null;
             public ?\Closure $iterator = null;
 
-            public function runGet(object $target, string $prop, Proxy $proxy)
+            public function runGet($target, string $prop, Proxy $proxy)
             {
                 return parent::runGet($target, $prop, $proxy);
             }
 
-            public function runSet(object $target, string $prop, $value, Proxy $proxy): void
+            public function runSet($target, string $prop, $value, Proxy $proxy): void
             {
                 parent::runSet($target, $prop, $value, $proxy);
             }
 
-            public function runIsset(object $target, string $prop, Proxy $proxy): bool
+            public function runIsset($target, string $prop, Proxy $proxy): bool
             {
                 return parent::runIsset($target, $prop, $proxy);
             }
 
-            public function runUnset(object $target, string $prop, Proxy $proxy): void
+            public function runUnset($target, string $prop, Proxy $proxy): void
             {
                 parent::runUnset($target, $prop, $proxy);
             }
 
-            public function runCall(object $target, string $prop, array $arguments, Proxy $proxy)
+            public function runCall($target, string $prop, array $arguments, Proxy $proxy)
             {
                 return parent::runCall($target, $prop, $arguments, $proxy);
             }
@@ -149,6 +149,34 @@ class ClosuresTest extends TestCase
         $result1 = $instance->runGet($testTarget, 'prop', $emptyProxy);
         $result2 = $instance->runGet($testTarget, 'prop2', $emptyProxy);
         $self->assertTrue($result1 === 101 && $result2 === 100);
+
+    }
+
+    public function test_runGet_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+            public static $prop2 = 101;
+
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        static::assertTrue($handlers->runGet($class, 'prop', $emptyProxy) === 100 && $handlers->runGet($class, 'prop2', $emptyProxy) === 101);
+
+        $handler = function ($target, $name, $value) use ($self, $class) {
+            $self->assertTrue($class === $target);
+            return $target::$$name + 1;
+        };
+        $handlerProp = function ($target, $name, $value) use ($self, $class) {
+            $self->assertTrue($class === $target);
+            return $target::$$name + 2;
+        };
+        $handlers->init('get', $handler);
+        static::assertTrue($handlers->runGet($class, 'prop', $emptyProxy) === 101 && $handlers->runGet($class, 'prop2', $emptyProxy) === 102);
+        $handlers->initProp('get', 'prop', $handlerProp);
+        static::assertTrue($handlers->runGet($class, 'prop', $emptyProxy) === 102 && $handlers->runGet($class, 'prop2', $emptyProxy) === 102);
     }
 
     public function test_runSet()
@@ -173,6 +201,42 @@ class ClosuresTest extends TestCase
         $self->assertTrue($testTarget->default === 99 && $testTarget->prop === 101 && $testTarget->prop2 === 100);
     }
 
+    public function test_runSet_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+            public static $prop2 = 101;
+
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        $handlers->runSet($class, 'prop', 200, $emptyProxy);
+        $handlers->runSet($class, 'prop2', 201, $emptyProxy);
+        static::assertTrue($class::$prop === 200 && $class::$prop2 === 201);
+        $handler = function ($target, $name, $value) use ($self, $class) {
+            $target::$$name = $value + 1;
+        };
+        $handlerProp = function ($target, $name, $value) use ($self, $class) {
+            $target::$$name = $value + 2;
+        };
+        $handlers->init('set', $handler);
+        $handlers->runSet($class, 'prop', 200, $emptyProxy);
+        $handlers->runSet($class, 'prop2', 201, $emptyProxy);
+        static::assertTrue($class::$prop === 201 && $class::$prop2 === 202);
+        $handlers->initProp('set', 'prop', $handlerProp);
+        $handlers->runSet($class, 'prop', 200, $emptyProxy);
+        $handlers->runSet($class, 'prop2', 201, $emptyProxy);
+        static::assertTrue($class::$prop === 202 && $class::$prop2 === 202);
+        try {
+            $handlers->runSet($class, 'no_prop', 201, $emptyProxy);
+            static::assertTrue(false);
+        } catch (\Error $e) {
+            static::assertTrue(true);
+        }
+    }
+
     public function test_runIsset()
     {
         $instance = self::$fixtures['wrap_data']['instance'];
@@ -193,6 +257,40 @@ class ClosuresTest extends TestCase
         $result1 = $instance->runIsset($testTarget, 'prop', $emptyProxy);
         $result2 = $instance->runIsset($testTarget, 'prop2', $emptyProxy);
         $self->assertTrue($result1 && !$result2);
+    }
+
+    public function test_runIsset_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+            public static $prop2 = 101;
+
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        static::assertTrue(
+            $handlers->runIsset($class, 'prop', $emptyProxy) &&
+            $handlers->runIsset($class, 'prop2', $emptyProxy) &&
+            !$handlers->runIsset($class, 'no_prop', $emptyProxy)
+        );
+        $handler = function ($target, $name, $value) use ($self, $class) {
+            return true;
+        };
+        $handlerProp = function ($target, $name, $value) use ($self, $class) {
+            return false;
+        };
+        $handlers->init('isset', $handler);
+        static::assertTrue(
+            $handlers->runIsset($class, 'prop', $emptyProxy) &&
+            $handlers->runIsset($class, 'no_prop', $emptyProxy)
+        );
+        $handlers->initProp('isset', 'prop', $handlerProp);
+        static::assertTrue(
+            !$handlers->runIsset($class, 'prop', $emptyProxy) &&
+            $handlers->runIsset($class, 'no_prop', $emptyProxy)
+        );
     }
 
     public function test_runUnset()
@@ -220,12 +318,54 @@ class ClosuresTest extends TestCase
         );
     }
 
+    public function test_runUnset_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+            public static $prop2 = 101;
+
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        try {
+            $handlers->runUnset($class, 'prop', $emptyProxy);
+            static::assertTrue(false);
+        } catch (\Throwable $e) {
+            static::assertTrue(true);
+        }
+
+        $handler = function ($target, $name, $value) use ($self, $class) {
+
+        };
+        $handlerProp = function ($target, $name, $value) use ($self, $class) {
+            unset($target::$$name);
+        };
+        $handlers->init('unset', $handler);
+        $handlers->runUnset($class, 'prop', $emptyProxy);
+        static::assertTrue(isset($class::$prop));
+        $handlers->initProp('unset', 'prop', $handlerProp);
+        try {
+            $handlers->runUnset($class, 'prop', $emptyProxy);
+            static::assertTrue(false);
+        } catch (\Throwable $e) {
+            static::assertTrue(true);
+        }
+    }
+
     public function test_runCall()
     {
         $instance = self::$fixtures['wrap_data']['instance'];
         $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
         $self = $this;
         $testTarget = (object)['default' => 99, 'prop' => 100, 'prop2' => 200];
+        try {
+            $instance->runCall($testTarget, 'prop', [1], $emptyProxy);
+            static:: assertTrue(false);
+        } catch (\Throwable $e) {
+            static:: assertTrue(true);
+        }
         $handler = function ($target, $name, $args) use ($self, $testTarget) {
             $self->assertTrue($testTarget === $target && $name === 'prop2' && $args[0] === 'test');
             return 'hello';
@@ -241,6 +381,45 @@ class ClosuresTest extends TestCase
         $self->assertTrue(
             $result1 === 'bay'
             && $result2 === 'hello'
+        );
+    }
+
+    public function test_runCall_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+
+            public static function method()
+            {
+                return 102;
+            }
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        try {
+            $handlers->runCall($class, 'prop', [1], $emptyProxy);
+            static:: assertTrue(false);
+        } catch (\Throwable $e) {
+            static:: assertTrue(true);
+        }
+        static:: assertTrue($handlers->runCall($class, 'method', [], $emptyProxy) === 102);
+        $handler = function ($target, $name, $args) {
+            return 'hello';
+        };
+        $handlerProp = function ($target, $name, $args) {
+            return 'bay';
+        };
+        $handlers->init('call', $handler);
+        static:: assertTrue(
+            $handlers->runCall($class, 'method', [], $emptyProxy) === 'hello' &&
+            $handlers->runCall($class, 'prop', [], $emptyProxy) === 'hello'
+        );
+        $handlers->initProp('call', 'prop', $handlerProp);
+        static:: assertTrue(
+            $handlers->runCall($class, 'method', [], $emptyProxy) === 'hello' &&
+            $handlers->runCall($class, 'prop', [], $emptyProxy) === 'bay'
         );
     }
 
@@ -275,5 +454,29 @@ class ClosuresTest extends TestCase
         $self->assertTrue($itr === $default_itr);
     }
 
+    public function test_runIterator_for_class()
+    {
+        $class = get_class(new class() {
+            public static $prop = 100;
+            public static $prop2 = 101;
 
+        });
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        $proxy = new Proxy($class, $handlers);
+        $check = false;
+        foreach ($proxy as $key => $value) {
+            static::assertTrue(isset($class::$$key) && $class::$$key === $value);
+            $check = true;
+        }
+        static::assertTrue($check);
+        $default_itr = new \ArrayIterator([]);
+        $handler = function ($target) use ($default_itr) {
+            return $default_itr;
+        };
+        $handlers->init('iterator', $handler);
+        static::assertTrue($handlers->runIterator($class, $emptyProxy) === $default_itr);
+    }
 }

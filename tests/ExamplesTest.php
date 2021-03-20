@@ -111,12 +111,12 @@ class ExamplesTest extends TestCase
     public static function test_example_3()
     {
         $inst = new class () extends Instance {
-            protected static function static_get(object $target, string $prop, $val_or_args = null, Proxy $proxy)
+            protected static function static_get( $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
             }
 
-            protected static function static_get_test(object $target, string $prop, $val_or_args = null, Proxy $proxy)
+            protected static function static_get_test( $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;
             }
@@ -138,12 +138,12 @@ class ExamplesTest extends TestCase
                 $this->prefix = $prefix;
             }
 
-            protected function get(object $target, string $prop, $val_or_args = null, Proxy $proxy)
+            protected function get( $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
             }
 
-            protected function get_test(object $target, string $prop, $val_or_args = null, Proxy $proxy)
+            protected function get_test( $target, string $prop, $val_or_args = null, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtolower($this->prefix . $target->$prop) : $target->$prop;
             }

@@ -29,32 +29,32 @@ class InstanceTest extends TestCase
     public static function test_core_static_action()
     {
         $inst = new class() extends Instance {
-            public static function static_get(object $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_get( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return isset($target->$prop) ? $target->$prop . '_' : 'empty';
             }
 
-            public static function static_set(object $target, string $prop, $val, Proxy $proxy): void
+            public static function static_set( $target, string $prop, $val, Proxy $proxy): void
             {
                 $target->$prop = '_' . $val;
             }
 
-            public static function static_isset(object $target, string $prop, $val = null, Proxy $proxy = null): bool
+            public static function static_isset( $target, string $prop, $val = null, Proxy $proxy = null): bool
             {
                 return true;
             }
 
-            public static function static_unset(object $target, string $prop, $val = null, Proxy $proxy = null): void
+            public static function static_unset( $target, string $prop, $val = null, Proxy $proxy = null): void
             {
 
             }
 
-            public static function static_call(object $target, string $prop, array $args = [], Proxy $proxy = null)
+            public static function static_call( $target, string $prop, array $args = [], Proxy $proxy = null)
             {
                 return $args[0];
             }
 
-            public static function static_iterator(object $target, $prop = null, $val = null, Proxy $proxy = null): \Traversable
+            public static function static_iterator( $target, $prop = null, $val = null, Proxy $proxy = null): \Traversable
             {
                 $props = array_keys(get_object_vars($target));
                 return new class($props, $proxy) implements \Iterator {
@@ -117,27 +117,27 @@ class InstanceTest extends TestCase
     public static function test_props_static_action()
     {
         $inst = new class() extends Instance {
-            public static function static_get_test(object $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_get_test( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return $target->$prop . '_';
             }
 
-            public static function static_set_test(object $target, string $prop, $val, Proxy $proxy)
+            public static function static_set_test( $target, string $prop, $val, Proxy $proxy)
             {
                 $target->test = '_' . $val;
             }
 
-            public static function static_isset_test(object $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_isset_test( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return false;
             }
 
-            public static function static_unset_test(object $target, string $prop, $val = null, Proxy $proxy = null)
+            public static function static_unset_test( $target, string $prop, $val = null, Proxy $proxy = null)
             {
 
             }
 
-            public static function static_call_test(object $target, string $prop, $args = [], Proxy $proxy = null)
+            public static function static_call_test( $target, string $prop, $args = [], Proxy $proxy = null)
             {
                 return $args[0];
             }
@@ -178,32 +178,32 @@ class InstanceTest extends TestCase
     public static function test_core_instance_action()
     {
         $inst = new class() extends Instance {
-            public function get(object $target, string $prop, $val = null, Proxy $proxy)
+            public function get( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return isset($target->$prop) ? $target->$prop . '_' : 'empty';
             }
 
-            public function set(object $target, string $prop, $val, Proxy $proxy): void
+            public function set( $target, string $prop, $val, Proxy $proxy): void
             {
                 $target->$prop = '_' . $val;
             }
 
-            public function isset(object $target, string $prop, $val = null, Proxy $proxy): bool
+            public function isset( $target, string $prop, $val = null, Proxy $proxy): bool
             {
                 return true;
             }
 
-            public function unset(object $target, string $prop, $val = null, Proxy $proxy): void
+            public function unset( $target, string $prop, $val = null, Proxy $proxy): void
             {
 
             }
 
-            public function call(object $target, string $prop, array $args = [], Proxy $proxy)
+            public function call( $target, string $prop, array $args = [], Proxy $proxy)
             {
                 return $args[0];
             }
 
-            public function iterator(object $target, $prop = null, $val = null, Proxy $proxy): \Traversable
+            public function iterator( $target, $prop = null, $val = null, Proxy $proxy): \Traversable
             {
                 $props = array_keys(get_object_vars($target));
                 return new class($props, $proxy) implements \Iterator {
@@ -265,27 +265,27 @@ class InstanceTest extends TestCase
     public static function test_props_instance_action()
     {
         $inst = new class() extends Instance {
-            public function get_test(object $target, string $prop, $val = null, Proxy $proxy)
+            public function get_test( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return $target->$prop . '_';
             }
 
-            public function set_test(object $target, string $prop, $val, Proxy $proxy)
+            public function set_test( $target, string $prop, $val, Proxy $proxy)
             {
                 $target->test = '_' . $val;
             }
 
-            public function isset_test(object $target, string $prop, $val = null, Proxy $proxy)
+            public function isset_test( $target, string $prop, $val = null, Proxy $proxy)
             {
                 return false;
             }
 
-            public function unset_test(object $target, string $prop, $val = null, Proxy $proxy)
+            public function unset_test( $target, string $prop, $val = null, Proxy $proxy)
             {
 
             }
 
-            public function call_test(object $target, string $prop, $args = [], Proxy $proxy)
+            public function call_test( $target, string $prop, $args = [], Proxy $proxy)
             {
                 return $args[0];
             }
@@ -303,5 +303,57 @@ class InstanceTest extends TestCase
         unset($proxy->test2);
         static::assertTrue(isset($target->test) && !isset($target->test2));
         static::assertTrue($proxy->test('q') === 'q');
+    }
+    
+    public static function test_default_action_for_class()
+    {
+        $inst = new class() extends Instance { };
+        $HandlersClass = get_class($inst);
+        $target = get_class(new class (){
+            public static $prop=100;
+            public static $prop2=101;
+            public static function method($arg)
+            {
+                return $arg+1;
+            }
+        });
+        $proxy = $HandlersClass::proxy($target);
+        static::assertTrue($proxy->prop === 100);
+        try{
+            $proxy->no_prop;
+            static::assertTrue(false);
+        }catch(\Throwable $e){
+            static::assertTrue(true);
+        }
+        $proxy->prop =201;
+        static::assertTrue($target::$prop===201);
+        try{
+            $proxy->no_prop=201;
+            static::assertTrue(false);
+        }catch(\Throwable $e){
+            static::assertTrue(true);
+        }
+        static::assertTrue(isset($proxy->prop));
+        static::assertTrue(!isset($proxy->no_prop));
+        try{
+            unset($proxy->prop);
+            static::assertTrue(false);
+        }catch(\Throwable $e){
+            static::assertTrue(true);
+        }
+        try{
+            $proxy->prop();
+            static::assertTrue(false);
+        }catch(\Throwable $e){
+            static::assertTrue(true);
+        }
+        static::assertTrue( $proxy->method(1)===2);
+        
+        $check=false;
+        foreach ($proxy as $key => $value) {
+            $check=true;
+            static::assertTrue(isset($target::$$key) && $target::$$key === $value);
+        }
+        static::assertTrue($check);
     }
 }
