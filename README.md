@@ -206,7 +206,6 @@ unset($proxy->test); // unset($target->_test)
 echo key_exists($target,'_test'); // return false;
 
 ```
-
 ## Create handlers for Proxy object
 
 There are two ways to write handlers:
@@ -529,6 +528,40 @@ $proxy=MyHandlers::proxy($obj);
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
+## Proxying class static members
+
+In addition to proxying the members of an object, it is possible to proxy static members of a class.
+To do this, instead of an object, you will need to specify the class
+
+```php
+<?php
+use Alpa\ProxyObject\Handlers\Instance; 
+class MyClass{
+	public static $prop1='Hello';
+	public static $prop2='bay';
+	public static function method(int $arg)
+	{
+		return $arg+1;
+	}
+}
+class MyHandlers extends Instance{}
+$proxy=MyHandlers::proxy(MyClass::class);
+echo $proxy->prop1;// 'Hello';
+$proxy->prop2='BAY';
+echo $MyClass::$prop2;// 'BAY';
+echo isset($proxy->prop2);// true;
+echo isset($proxy->no_prop);// false;
+$proxy->prop2='test';// Errror:Cannot set new static class property
+unset($proxy->prop2);// Errror:Cannot unset  static class property
+$proxy->prop2();// Errror:By default, you cannot call the property. But you can set a handler on the call action and the properties will be called according to the handler logic.
+echo $proxy->method(1);// return 2
+foreach($proxy as $key=>$value){
+	echo $key." && ".$value;
+	// prop1 && Hello;
+	// prop2 && BAY;
+}
+```
+
 
 
 ## Creating handler classes
