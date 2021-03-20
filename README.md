@@ -300,7 +300,7 @@ $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
 
 ### Static writing of handlers through class declaration.
 
-Class declaration in which static methods will be handlers.
+Class declaration in which methods will be handlers.
 
 ```php
 <?php
