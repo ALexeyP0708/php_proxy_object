@@ -541,3 +541,36 @@ $proxy = new Proxy ($target,$handlers);
 ```
 
 For each action (set | get | isset | unset | call | iterator) you will need to implement working code.
+
+## Limitations
+
+For a member of a proxy object, it doesn't make sense to apply checks such as `property_exists` or` method_exists` or similar, since they will be applied directly to the proxy object. Therefore, when working with a proxy, always use the `isset` check.  If you have complex logic where you need to check both properties and methods, then it is recommended to separate the logic for working with properties and the logic for working with methods.
+
+```php
+<?php
+	use Alpa\ProxyObject\Proxy;
+	use Alpa\ProxyObject\Hanclers\Instance;
+	class MyHandlers extends Instance
+	{
+		protected bool $is_methods=false;
+		public function __construct(bool $is_methods=false){
+			$this->is_methods=$is_methods;
+		}
+		protected function isset (object $target,string $prop,$val=null,Proxy $proxy):bool
+		{
+			if($is_methods){
+				return method_exists($target,$prop);
+			}
+			return property_exists($target,$prop)
+		}
+	}
+	class TargetClass
+	{
+		public $property='hello';
+		public function method(){}
+	}
+	$inst=new TargetClass();
+	$proxyProps=MyHandlers::proxy($inst,new new  MyHandlers());
+	$proxyMethods=MyHandlers::proxy($inst,new new  MyHandlers(true));  
+
+```  
