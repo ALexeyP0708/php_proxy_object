@@ -29,7 +29,7 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object`  
+`composer require alpa/proxy_object:1.0.5`  - I recommend freezing on version 1.0.5
 
 
 ## Getting started
@@ -586,7 +586,9 @@ $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
 ```
 
-For each action (set | get | isset | unset | call | iterator) you will need to implement working code.
+For each action (set | get | isset | unset | call | iterator) you will need to implement working code.  
+
+If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
 
 ## Difficulties
 
