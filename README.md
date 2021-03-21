@@ -33,7 +33,7 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object:v1.0.5`  - I recommend freezing on version v1.0.5
+`composer require alpa/proxy_object:v1.0.6`  - I recommend freezing on version v1.0.6
 
 
 ## Getting started
