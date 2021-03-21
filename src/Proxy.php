@@ -40,7 +40,7 @@ class Proxy implements \IteratorAggregate
     }
 
     /**
-     * @param string $action get|set|isset|unset|call|iterator
+     * @param string $action get|set|isset|unset|call|invoke|iterator
      * @param string|null $prop The "iterator" action does not pass this argument
      * @param null $value_or_arguments the value from the "set" and "call" actions
      * @return mixed  returned result of "get" "isset" "call" actions. 
@@ -78,7 +78,10 @@ class Proxy implements \IteratorAggregate
     {
         return $this->run('call', $name, $arguments);
     }
-
+    public function __invoke(...$arguments)
+    {
+        return $this->run('invoke', null, $arguments);
+    }
     public function getIterator(): \Traversable
     {
         $iterator = $this->run('iterator');

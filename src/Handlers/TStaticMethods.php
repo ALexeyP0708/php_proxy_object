@@ -10,18 +10,18 @@ trait TStaticMethods
 {
     public static function static_run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)
     {
-        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'iterator'])) {
-            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|iterator"');
+        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call','invoke','iterator'])) {
+            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|iterator"');
         }
         $method = static::getActionPrefix() . $action;
         $methodProp = null;
-        if ($method !== 'iterator') {
+        if (!in_array($action,['iterator','invoke'])) {
             $methodProp = $method . '_' . $prop;
         }
         if ($methodProp !== null && method_exists(static::class, $methodProp)) {
             $method = $methodProp;
         }
-        return call_user_func([static::class, $method], $target, $prop, $value_or_args, $proxy);
+        return static::{$method}($target, $prop, $value_or_args, $proxy);
     }
     protected  static function getActionPrefix(): string
     {
@@ -112,11 +112,25 @@ trait TStaticMethods
     public static function call($target, string $prop, array $value_or_args = [], Proxy $proxy)
     {
         if(is_string($target)){
-            //return method_exists($target,$prop) ? $target::{$prop}(...$value_or_args) : ($target::$$prop)(...$value_or_args);
             return $target::{$prop}(...$value_or_args);
         }
-        //return method_exists($target,$prop) ? $target->$prop(...$value_or_args) : ($target->$prop)(...$value_or_args);
         $target->$prop(...$value_or_args);
+    }    
+    /**
+     * invoke object
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -  object member name
+     * @param array $value_or_args - arguments to the called function.
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return mixed
+     */
+    public static function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    {
+        if(is_string($target)){
+            return ($target)(...$value_or_args);
+        }
+        return $target(...$value_or_args);
     }
 
     /**

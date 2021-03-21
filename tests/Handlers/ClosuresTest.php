@@ -19,7 +19,7 @@ class ClosuresTest extends TestCase
                 'set' => [],
                 'isset' => [],
                 'unset' => [],
-                'call' => []
+                'call' => [],
             ];
             public ?\Closure $get = null;
             public ?\Closure $set = null;
@@ -27,6 +27,7 @@ class ClosuresTest extends TestCase
             public ?\Closure $isset = null;
             public ?\Closure $call = null;
             public ?\Closure $iterator = null;
+            public ?\Closure $invoke = null;
 
             public function runGet($target, string $prop, Proxy $proxy)
             {
@@ -52,7 +53,10 @@ class ClosuresTest extends TestCase
             {
                 return parent::runCall($target, $prop, $arguments, $proxy);
             }
-
+            public function runInvoke($target,array $arguments, Proxy $proxy)
+            {
+                return parent::runInvoke($target, $arguments, $proxy);
+            }
             public function runIterator($target, Proxy $proxy): \Traversable
             {
                 return parent::runIterator($target, $proxy);
@@ -453,7 +457,34 @@ class ClosuresTest extends TestCase
         $itr = $instance->runIterator($obj2, $emptyProxy);
         $self->assertTrue($itr === $default_itr);
     }
-
+    public function test_runInvoke()
+    {
+        $instance = self::$fixtures['wrap_data']['instance'];
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        $handler = function ($target, $args) {
+            return $args[0]+1;
+        };
+        $instance->init('invoke', $handler);
+        static ::assertTrue($instance->runInvoke((object)[],[1],$emptyProxy)===2);
+        
+        
+    }
+    public function test_runInvoke_for_class()
+    {
+        $instance = self::$fixtures['wrap_data']['instance'];
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        $handler = function ($target, $args) {
+            return $args[0]+1;
+        };
+        $instance->init('invoke', $handler);
+        static ::assertTrue($instance->runInvoke(get_class(new class () {}),[1],$emptyProxy)===2);
+    }
     public function test_runIterator_for_class()
     {
         $class = get_class(new class() {

@@ -43,6 +43,9 @@ class ProxyTest extends TestCase
         $handlers->init('call', function ($target, $name, $args) {
             return $args[0];
         });
+        $handlers->init('invoke', function ($target, $args) {
+            return $args[0];
+        });
         $target = (object)['hello' => 'hello', 'bay' => 'bay'];
         $proxy = new Proxy($target, $handlers);
         $this->assertTrue($proxy->test === 'success' && $proxy->hello === 'success');
@@ -52,6 +55,7 @@ class ProxyTest extends TestCase
         unset($proxy->bay);
         $this->assertTrue(!isset($target->bay));
         $this->assertTrue($proxy->hello('success') === 'success');
+        $this->assertTrue($proxy('success') === 'success');        
         foreach ($proxy as $key => $value) {
             $this->assertTrue(property_exists($target, $key) && $target->$key === $value);
         }

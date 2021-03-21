@@ -208,6 +208,9 @@ unset($proxy->test); // unset($target->_test)
 echo key_exists($target,'_test'); // return false;
 
 ```
+
+## Definitions
+
 ## Create handlers for Proxy object
 
 There are two ways to write handlers:
@@ -227,6 +230,7 @@ The following actions exist when accessing the members of an object:
 - isset - member check  ;
 - unset - member delete;
 - call - member call;
+- invoke - invoke object or class;
 - iterator - assigning an iterator when iterating over the members of an object.
 
 
@@ -245,6 +249,10 @@ $handlers=new \Alpa\ProxyObject\Handlers\Closures([
     'unset'=>function($target,$prop,$proxy):void{},
     //  handler to check if members exist
     'isset'=>function($target,$prop,$proxy):bool{},
+    //  handler to call members
+    'call'=>function($target,$prop,$args,$proxy){},
+    // handler for invoke object or class 
+    'invoke'=>function($target,array $args,$proxy){},
     // handler for delete members
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
@@ -261,6 +269,8 @@ $handlers->init('get',function($target,$name,$proxy){});
 $handlers->init('set',function($target,$name,$value,$proxy):void{});
 $handlers->init('unset',function($target,$prop,$proxy):void{});
 $handlers->init('isset',function($target,$prop,$proxy):bool{});
+$handlers->init('call',function($target,$prop, $args,$proxy){});
+$handlers->init('invoke',function($target,$args,$proxy){});
 $handlers->init('iterator',function($target,$prop,$proxy):\Traversable{});
 ```
 
@@ -280,7 +290,10 @@ $handlers=new \Alpa\ProxyObject\Handlers\Closures([],[
     ] ,
     'isset'=>[
          'prop'=>function ($target,$name,$proxy):bool{}  
-    ]       
+    ],
+    'call'=>[
+         'prop'=>function ($target,$name,$args,$proxy){}  
+    ]     
 ]);
 ```
 
@@ -293,6 +306,7 @@ $handlers->initProp('get','prop',function ($target,$name,$proxy):mixed{});
 $handlers->initProp('set','prop',function ($target,$name,$value,$proxy):void{});
 $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
 $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
+$handlers->initProp('call','prop',function ($target,$name,$args,$proxy){});
 ```
 
 
@@ -327,7 +341,7 @@ or
 ```php
 <?php
 // to declare only instance actions
-use Alpa\ProxyObject\Handlers\StaticActions;
+use Alpa\ProxyObject\Handlers\InstanceActions;
 class MyHandlers extends InstanceActions
 {
     
@@ -348,6 +362,7 @@ or `Alpa\ProxyObject\Handlers\Instance`)
 - unset_{$name_property} - removing a member named $name_property;
 - call - call member;
 - call_{$name_property} - call a member named $name_property;
+- invoke - invoke object or class;
 - iterator - assigning an iterator to foreach;
 
 
@@ -363,6 +378,7 @@ You can declare the following static methods as handlers :
 - static_unset_{$name_property} - removing a member named $name_property;
 - static_call - call member;
 - static_call_{$name_property} - call a member named $name_property;
+- static_invoke - invoke object or class;
 - static_iterator - assigning an iterator to foreach;
 
 
@@ -440,6 +456,20 @@ class MyHandlers extends Handlers\Instance
     }
     
     /**
+     * invoke object
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -  object member name
+     * @param array $value_or_args - arguments to the called function.
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return mixed
+     */
+    protected  function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    {
+        return parent::invoke($target,$prop,$value_or_args,$proxy);
+    }
+    
+    /**
     * creates an iterator for foreach
     * @param object|string $target - observable object or class.
     * @param null $prop - irrelevant 
@@ -514,6 +544,20 @@ class MyHandlers extends Handlers\Instance
     protected static function static_call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
     {
         return parent::static_call($target,$prop,$value_or_args,$proxy);
+    }
+    
+    /**
+     * invoke object
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -  object member name
+     * @param array $value_or_args - arguments to the called function.
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return mixed
+     */
+    protected  static function static_invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    {
+        return parent::static_invoke($target,$prop,$value_or_args,$proxy);
     }
     
     /**
@@ -603,6 +647,20 @@ class MyHandlers extends Handlers\InstanceActions
     }
     
     /**
+     * invoke object
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -  object member name
+     * @param array $value_or_args - arguments to the called function.
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return mixed
+     */
+    protected function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    {
+        return parent::static_invoke($target,$prop,$value_or_args,$proxy);
+    }
+    
+    /**
     * creates an iterator for foreach
     * @param object|string $target - observable object or class.
     * @param null $prop - irrelevant 
@@ -683,11 +741,23 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
+    protected static function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
-    
+    /**
+     * invoke object
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -  object member name
+     * @param array $value_or_args - arguments to the called function.
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return mixed
+     */
+    protected static function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    {
+        return parent::static_invoke($target,$prop,$value_or_args,$proxy);
+    }   
     /**
     * creates an iterator for foreach
     * @param object|string $target - observable object or class.
@@ -704,7 +774,8 @@ class MyHandlers extends Handlers\StaticActions
 ```
 
 
-Assignment of handlers for a specific member follows the pattern of assigning handlers for all properties.
+Action handlers for a specific member are created similar to action handlers for all properties.
+The exceptions are the "invoke" and "iterator" actions. they only apply to the observable object or class.
 
 Example:
 

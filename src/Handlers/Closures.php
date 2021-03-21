@@ -20,6 +20,7 @@ class Closures implements IContract
     protected ?\Closure $unset = null;
     protected ?\Closure $isset = null;
     protected ?\Closure $call = null;
+    protected ?\Closure $invoke = null;
     protected ?\Closure $iterator = null;
 
     public function __construct(array $handlers = [], array $handlersProp = [])
@@ -49,13 +50,15 @@ class Closures implements IContract
                 break;
             case 'call':
                 return $this->runCall($target, $prop, $value_or_arguments, $proxy);
+            case 'invoke':
+                return $this->runInvoke($target, $value_or_arguments, $proxy);
             case 'iterator':
                 return $this->runIterator($target, $proxy);
         }
     }
 
     /**
-     * initializes handlers for specific actions (get | set | unset | isset | call)
+     * initializes handlers for specific actions (get | set | unset | isset | call | invoke | iterator)
      * @param string $action get | set | unset | isset | call The action for which you want to install the handler
      * @param callable $handler A handler that will process a specific action
      * @return bool  Indicates whether a handler is set
@@ -107,7 +110,7 @@ class Closures implements IContract
         } else  if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $proxy);
         }
-        return TStaticMethods::static_run('get',$target,$prop,null,$proxy);
+        return TStaticMethods::static_run($action,$target,$prop,null,$proxy);
     }
 
     /**
@@ -126,7 +129,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             ($this->$action)($target, $prop, $value, $proxy);
         } else {
-            TStaticMethods::static_run('set',$target,$prop,$value,$proxy);
+            TStaticMethods::static_run($action,$target,$prop,$value,$proxy);
         }       
     }
 
@@ -145,7 +148,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $proxy);
         }
-        return TStaticMethods::static_run('isset',$target,$prop,null,$proxy);
+        return TStaticMethods::static_run($action,$target,$prop,null,$proxy);
     }
 
     /**
@@ -163,7 +166,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             ($this->$action)($target, $prop, $proxy);
         } else  {
-            TStaticMethods::static_run('unset',$target,$prop,null,$proxy);
+            TStaticMethods::static_run($action,$target,$prop,null,$proxy);
         }
     }
 
@@ -184,7 +187,23 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $arguments, $proxy);
         }
-        return TStaticMethods::static_run('call',$target,$prop,$arguments,$proxy);
+        return TStaticMethods::static_run($action,$target,$prop,$arguments,$proxy);
+    }    
+    
+    /**
+     * invoke object
+     * @param object|string $target
+     * @param array $arguments
+     * @param Proxy $proxy
+     * @return mixed
+     */
+    protected function runInvoke($target, array $arguments, Proxy $proxy)
+    {
+        $action = 'invoke';
+        if ($this->$action !== null) {
+            return ($this->$action)($target, $arguments, $proxy);
+        }
+        return TStaticMethods::static_run($action,$target,null,$arguments,$proxy);
     }
 
     /**

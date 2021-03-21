@@ -24,6 +24,13 @@ class InstanceTest extends TestCase
         }
         unset($proxy->test);
         static::assertTrue(!isset($target->test));
+        try{
+            $proxy();
+            static::assertTrue(false);
+        } catch(\Throwable $e){
+            static::assertTrue(true);
+        }
+    
     }
 
     public static function test_core_static_action()
@@ -52,6 +59,10 @@ class InstanceTest extends TestCase
             public static function static_call( $target, string $prop, array $args = [], Proxy $proxy = null)
             {
                 return $args[0];
+            }
+            public static function static_invoke( $target,  $prop=null, array $args = [], Proxy $proxy = null)
+            {
+                return $args[0]+1;
             }
 
             public static function static_iterator( $target, $prop = null, $val = null, Proxy $proxy = null): \Traversable
@@ -112,6 +123,7 @@ class InstanceTest extends TestCase
         unset($proxy->test);
         static::assertTrue(isset($target->test));
         static::assertTrue($proxy->test('q') === 'q' && $proxy->no_test('z') === 'z');
+        static::assertTrue($proxy(1)===2);
     }
 
     public static function test_props_static_action()
@@ -156,6 +168,7 @@ class InstanceTest extends TestCase
         unset($proxy->test2);
         static::assertTrue(isset($target->test) && !isset($target->test2));
         static::assertTrue($proxy->test('q') === 'q');
+       
     }
 
     public static function test_default_instance_action()
@@ -173,6 +186,12 @@ class InstanceTest extends TestCase
         }
         unset($proxy->test);
         static::assertTrue(!isset($target->test));
+        try{
+            $proxy();
+            static::assertTrue(false);
+        } catch(\Error $e){
+            static::assertTrue(true);
+        }
     }
 
     public static function test_core_instance_action()
@@ -201,6 +220,10 @@ class InstanceTest extends TestCase
             public function call( $target, string $prop, array $args = [], Proxy $proxy)
             {
                 return $args[0];
+            }
+            public function invoke( $target,  $prop=null, array $args = [], Proxy $proxy)
+            {
+                return $args[0]+1;
             }
 
             public function iterator( $target, $prop = null, $val = null, Proxy $proxy): \Traversable
@@ -260,6 +283,7 @@ class InstanceTest extends TestCase
         unset($proxy->test);
         static::assertTrue(isset($target->test));
         static::assertTrue($proxy->test('q') === 'q' && $proxy->no_test('z') === 'z');
+        static::assertTrue( $proxy(1)===2,'invoke');
     }
 
     public static function test_props_instance_action()
@@ -307,7 +331,12 @@ class InstanceTest extends TestCase
     
     public static function test_default_action_for_class()
     {
-        $inst = new class() extends Instance { };
+        $inst = new class() extends Instance {
+            protected static function static_invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+            {
+                return $value_or_args[0]+1;
+            } 
+        };
         $HandlersClass = get_class($inst);
         $target = get_class(new class (){
             public static $prop=100;
@@ -355,5 +384,8 @@ class InstanceTest extends TestCase
             static::assertTrue(isset($target::$$key) && $target::$$key === $value);
         }
         static::assertTrue($check);
+        static::assertTrue($proxy(1)===2);
+        
     }
+
 }
