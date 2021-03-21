@@ -35,7 +35,7 @@ Should not break backward compatibility with version "Y".
 
 ## Description 
 The component creates a proxy object for the observed object or class.  
-Action handlers (getter | setter | caller | isseter | unseter | iterator) are assigned for each member of the observable object or class .   
+Action handlers (get | set | call | isset | unset | invoke | iterator) are assigned for each member of the observable object or class .   
 A similar principle is implemented in javascript through the Proxy constructor.   
 When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.   
 
