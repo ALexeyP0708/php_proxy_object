@@ -869,7 +869,7 @@ $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
 ```
 
-For each action (set | get | isset | unset | call | iterator) you will need to implement working code.  
+For each action (set | get | isset | unset | call | invoke | iterator) you will need to implement working code.  
 
 If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
 
