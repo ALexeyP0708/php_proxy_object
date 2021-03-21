@@ -13,7 +13,7 @@ trait TStaticMethods
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|iterator"');
         }
-        $method = 'static_' . $action;
+        $method = static::getActionPrefix() . $action;
         $methodProp = null;
         if ($method !== 'iterator') {
             $methodProp = $method . '_' . $prop;
@@ -23,7 +23,10 @@ trait TStaticMethods
         }
         return call_user_func([static::class, $method], $target, $prop, $value_or_args, $proxy);
     }
-
+    protected  static function getActionPrefix(): string
+    {
+        return '';
+    }
     public static function proxy($target, $handlers = null): Proxy
     {
         $handlers = $handlers !== null ? $handlers : static::class;
@@ -38,7 +41,7 @@ trait TStaticMethods
      * @param Proxy $proxy - the proxy object from which the method is called
      * @return mixed - it is necessary to return the result
      */
-    protected static function static_get($target, string $prop, $value_or_args = null, Proxy $proxy)
+    public static function get($target, string $prop, $value_or_args = null, Proxy $proxy)
     {
         if(is_string($target)){
             return $target::$$prop;
@@ -54,7 +57,7 @@ trait TStaticMethods
      * @param Proxy $proxy - the proxy object from which the method is called
      * @return void
      */
-    protected static function static_set($target, string $prop, $value_or_args, Proxy $proxy): void
+    public static function set($target, string $prop, $value_or_args, Proxy $proxy): void
     {
         if(is_string($target)){
             $target::$$prop= $value_or_args;
@@ -71,7 +74,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return void
      */
-    protected static function static_unset($target, string $prop, $value_or_args = null, Proxy $proxy): void
+    public static function unset($target, string $prop, $value_or_args = null, Proxy $proxy): void
     {
         if(!is_string($target)){
             unset($target->$prop);
@@ -89,7 +92,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return bool
      */
-    protected static function static_isset($target, string $prop, $value_or_args = null, Proxy $proxy): bool
+    public static function isset($target, string $prop, $value_or_args = null, Proxy $proxy): bool
     {
         if(is_string($target)){
             return isset($target::$$prop);
@@ -106,7 +109,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected static function static_call($target, string $prop, array $value_or_args = [], Proxy $proxy)
+    public static function call($target, string $prop, array $value_or_args = [], Proxy $proxy)
     {
         if(is_string($target)){
             //return method_exists($target,$prop) ? $target::{$prop}(...$value_or_args) : ($target::$$prop)(...$value_or_args);
@@ -125,8 +128,8 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return \Traversable
      */
-    
-    protected static function static_iterator($target, $prop = null, $value_or_args = null, Proxy $proxy): \Traversable
+
+    public static function iterator($target, $prop = null, $value_or_args = null, Proxy $proxy): \Traversable
     {       
         if(is_string($target)){
             return new ClassMembersIterator ($target);

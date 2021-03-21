@@ -6,8 +6,6 @@ use Alpa\ProxyObject\Proxy;
 
 trait TInstanceMethods
 {
-    use TStaticMethods;
-
     public function run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'iterator'])) {
@@ -26,36 +24,36 @@ trait TInstanceMethods
 
     public function newProxy($target)
     {
-        return static::proxy($target, $this);
+        return TStaticMethods::proxy($target, $this);
     }
 
-    protected function get($target, string $prop, $value_or_args = null, Proxy $proxy)
+    public function get($target, string $prop, $value_or_args = null, Proxy $proxy)
     {
-        return static::static_get($target, $prop, $value_or_args, $proxy);
+        return TStaticMethods::get($target, $prop, $value_or_args, $proxy);
     }
 
-    protected function set($target, string $prop, $value_or_args = null, Proxy $proxy): void
+    public function set($target, string $prop, $value_or_args = null, Proxy $proxy): void
     {
-        static::static_set($target, $prop, $value_or_args, $proxy);
+        TStaticMethods::set($target, $prop, $value_or_args, $proxy);
     }
 
-    protected function isset($target, string $prop, $value_or_args = null, Proxy $proxy): bool
+    public function isset($target, string $prop, $value_or_args = null, Proxy $proxy): bool
     {
-        return static::static_isset($target, $prop, $value_or_args, $proxy);
+        return TStaticMethods::isset($target, $prop, $value_or_args, $proxy);
     }
 
-    protected function unset($target, string $prop, $value_or_args = null, Proxy $proxy): void
+    public function unset($target, string $prop, $value_or_args = null, Proxy $proxy): void
     {
-        static::static_unset($target, $prop, $value_or_args, $proxy);
+        TStaticMethods::unset($target, $prop, $value_or_args, $proxy);
     }
 
-    protected function call($target, string $prop, array $value_or_args = [], Proxy $proxy)
+    public function call($target, string $prop, array $value_or_args = [], Proxy $proxy)
     {
-        return static::static_call($target, $prop, $value_or_args, $proxy);
+        return TStaticMethods::call($target, $prop, $value_or_args, $proxy);
     }
 
-    protected function iterator($target, $prop, $value_or_args = null, Proxy $proxy)
+    public function iterator($target, $prop, $value_or_args = null, Proxy $proxy)
     {
-        return static::static_iterator($target, $prop, $value_or_args, $proxy);
+        return TStaticMethods::iterator($target, $prop, $value_or_args, $proxy);
     }
 }

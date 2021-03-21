@@ -107,7 +107,7 @@ class Closures implements IContract
         } else  if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $proxy);
         }
-        return Instance::static_run('get',$target,$prop,null,$proxy);
+        return TStaticMethods::static_run('get',$target,$prop,null,$proxy);
     }
 
     /**
@@ -126,7 +126,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             ($this->$action)($target, $prop, $value, $proxy);
         } else {
-            Instance::static_run('set',$target,$prop,$value,$proxy);
+            TStaticMethods::static_run('set',$target,$prop,$value,$proxy);
         }       
     }
 
@@ -145,7 +145,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $proxy);
         }
-        return Instance::static_run('isset',$target,$prop,null,$proxy);
+        return TStaticMethods::static_run('isset',$target,$prop,null,$proxy);
     }
 
     /**
@@ -163,7 +163,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             ($this->$action)($target, $prop, $proxy);
         } else  {
-             Instance::static_run('unset',$target,$prop,null,$proxy);
+            TStaticMethods::static_run('unset',$target,$prop,null,$proxy);
         }
     }
 
@@ -184,7 +184,7 @@ class Closures implements IContract
         } else if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $arguments, $proxy);
         }
-        return Instance::static_run('call',$target,$prop,$arguments,$proxy);
+        return TStaticMethods::static_run('call',$target,$prop,$arguments,$proxy);
     }
 
     /**
@@ -198,7 +198,7 @@ class Closures implements IContract
         if ($this->iterator !== null) {
             return ($this->iterator)($target, $proxy);
         }
-        return Instance::static_run('iterator',$target,null,null,$proxy);
+        return TStaticMethods::static_run('iterator',$target,null,null,$proxy);
     }
 
     public static function static_run(string $action,  $target, ?string $prop = null, $value_or_arguments = null, Proxy $proxy)
