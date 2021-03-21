@@ -7,12 +7,27 @@ When including a component in a project, specify a specific version.
 The description of the api for a specific version can be found in the commit version.  
 
 ### 2 
+
 If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
 See - [Creating handler classes](#creating-handler-classes)
+
+### 3
+
+The proxy object is a wrapper object that implements magic methods.
+By default it is not possible to access protected / private members of an observable object / class.
+The default proxy only works with the public members of the observable / class.
+If you need the ability to work with protected / private members of an object / class, use Reflector classes in action handlers.
+
+### 4
+
+Not the fact that the use of proxy objects will be fast.
+But in any case, this is the optimal solution for
+creating complex combinations and in a simple way.
+
 ### Versions
 template: x.y.z   
 - x - version with major changes. Has no backward compatibility   
-- y - Versions with modifications that do not break backward compatibility   
+- y - Versions with modifications t hat do not break backward compatibility   
 - z - Versions for adding new features, changing APIs, refactoring and fixing bugs.   
 Should not break backward compatibility with version "Y".  
 
