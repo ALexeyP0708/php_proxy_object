@@ -1,10 +1,14 @@
 # ProxyObject
 ## Warning
+### 1
 From version 1.0.0 to version 1.1.0 is experimental development, where the API will be subject to modification.  
 See the tag description on GitHub for version compatibility.  
 When including a component in a project, specify a specific version.  
 The description of the api for a specific version can be found in the commit version.  
 
+### 2 
+If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
+See - [Creating handler classes](#creating-handler-classes)
 ### Versions
 template: x.y.z   
 - x - version with major changes. Has no backward compatibility   
@@ -29,7 +33,7 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object:1.0.5`  - I recommend freezing on version 1.0.5
+`composer require alpa/proxy_object:v1.0.5`  - I recommend freezing on version v1.0.5
 
 
 ## Getting started
