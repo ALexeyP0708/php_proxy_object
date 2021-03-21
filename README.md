@@ -33,7 +33,7 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object:v1.0.6`  - I recommend freezing on version v1.0.6
+`composer require alpa/proxy_object:v1.0.7`  - I recommend freezing on version v1.0.7
 
 
 ## Getting started
@@ -210,6 +210,10 @@ echo key_exists($target,'_test'); // return false;
 ```
 
 ## Definitions
+Definitions:
+- action (s) -Actions that can be applied to members of a class or object(`set|get|isset|unset|call`). As well as actions that are applied to a object or class  (`invoke | iterator`). sometimes an action will be understood as an action handler.
+-  handler(s) or action(s) handlers  - A function or method that handles actions
+- proxy - an object with declared magic methods, which will pass actions through itself to the members of the observable object or class/
 
 ## Create handlers for Proxy object
 
