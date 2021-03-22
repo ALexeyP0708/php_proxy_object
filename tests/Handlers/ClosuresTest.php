@@ -57,6 +57,10 @@ class ClosuresTest extends TestCase
             {
                 return parent::runInvoke($target, $arguments, $proxy);
             }
+            public function runToString($target, Proxy $proxy):string
+            {
+                return parent::runToString($target, $proxy);
+            }
             public function runIterator($target, Proxy $proxy): \Traversable
             {
                 return parent::runIterator($target, $proxy);
@@ -509,5 +513,30 @@ class ClosuresTest extends TestCase
         };
         $handlers->init('iterator', $handler);
         static::assertTrue($handlers->runIterator($class, $emptyProxy) === $default_itr);
+    }
+
+    public function test_runToString_for_instance_and_class()
+    {
+        $instance = self::$fixtures['wrap_data']['instance'];
+        $emptyProxy = self::$fixtures['wrap_data']['emptyProxyInstance'];
+        $HandlerClass = self::$fixtures['wrap_data']['class'];
+        $handlers = new $HandlerClass();
+        $self = $this;
+        $handler = function ($target) 
+        {
+            return 'HELLO';
+        };
+        $inst=new class () {};
+        $class=get_class($inst);
+        try {
+            $instance->runToStirng($inst,$emptyProxy);
+            static ::assertTrue(false);
+        } catch(\Throwable $e){
+            static ::assertTrue(true);
+        }
+        static ::assertTrue($instance->runToString($class,$emptyProxy)===$class);
+        static ::assertTrue($instance->runToString(new class (){public function __toString(){return 'hello';}},$emptyProxy)==='hello');
+        $instance->init('toString', $handler);
+        static ::assertTrue($instance->runToString($inst,$emptyProxy)==='HELLO');
     }
 }
