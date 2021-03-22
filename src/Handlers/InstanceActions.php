@@ -14,6 +14,8 @@ abstract class InstanceActions implements IContract
         TInstanceMethods::unset as protected;
         TInstanceMethods::isset as protected;
         TInstanceMethods::call as protected;
+        TInstanceMethods::invoke as protected;
+        TInstanceMethods::toString as protected;
         TInstanceMethods::iterator as protected;
     }
     public static function static_run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)

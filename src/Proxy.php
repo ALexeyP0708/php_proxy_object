@@ -81,6 +81,10 @@ class Proxy implements \IteratorAggregate
     public function __invoke(...$arguments)
     {
         return $this->run('invoke', null, $arguments);
+    }    
+    public function __toString():string
+    {
+        return $this->run('toString', null, null);
     }
     public function getIterator(): \Traversable
     {

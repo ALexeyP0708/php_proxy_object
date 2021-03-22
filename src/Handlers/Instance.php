@@ -18,6 +18,8 @@ abstract class Instance implements IContract
         TInstanceMethods::call as protected;
         TInstanceMethods::invoke insteadof TStaticMethods;
         TInstanceMethods::invoke as protected;
+        TInstanceMethods::toString insteadof TStaticMethods;
+        TInstanceMethods::toString as protected;
         TInstanceMethods::iterator insteadof TStaticMethods;
         TInstanceMethods::iterator as protected;
         TStaticMethods::get as protected static_get;
@@ -26,6 +28,7 @@ abstract class Instance implements IContract
         TStaticMethods::isset as protected static_isset;
         TStaticMethods::call as protected static_call;
         TStaticMethods::invoke as protected static_invoke;
+        TStaticMethods::toString as protected static_toString;
         TStaticMethods::iterator as protected static_iterator;
     }
     protected  static function getActionPrefix(): string

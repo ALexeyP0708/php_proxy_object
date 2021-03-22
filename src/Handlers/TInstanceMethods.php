@@ -8,7 +8,7 @@ trait TInstanceMethods
 {
     public function run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)
     {
-        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call','invoke' ,'iterator'])) {
+        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call','invoke','toString','iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|iterator"');
         }
         $method = $action;
@@ -55,6 +55,11 @@ trait TInstanceMethods
     public function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
     {
         return TStaticMethods::invoke($target, $prop, $value_or_args, $proxy);
+    }    
+    
+    public function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    {
+        return TStaticMethods::toString($target, $prop, $value_or_args, $proxy);
     }
 
     public function iterator($target, $prop, $value_or_args = null, Proxy $proxy)

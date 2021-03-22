@@ -10,7 +10,7 @@ trait TStaticMethods
 {
     public static function static_run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)
     {
-        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call','invoke','iterator'])) {
+        if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call','invoke','toString','iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|iterator"');
         }
         $method = static::getActionPrefix() . $action;
@@ -117,10 +117,9 @@ trait TStaticMethods
         $target->$prop(...$value_or_args);
     }    
     /**
-     * invoke object
-     * by default the member in target must be a method
+     * Converting an object or class to a string
      * @param object|string $target - observable object
-     * @param null $prop -  object member name
+     * @param null $prop - irrelevant
      * @param array $value_or_args - arguments to the called function.
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
@@ -131,6 +130,22 @@ trait TStaticMethods
             return ($target)(...$value_or_args);
         }
         return $target(...$value_or_args);
+    } 
+    /**
+     * Converting an object or class to a string
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop - irrelevant
+     * @param null $value_or_args  - irrelevant
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return string
+     */
+    public static function toString($target, $prop=null, $value_or_args = null, Proxy $proxy):string
+    {
+        /*if(is_string($target)){
+            return $target;
+        }*/
+        return ''.$target;
     }
 
     /**

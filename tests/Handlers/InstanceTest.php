@@ -30,7 +30,12 @@ class InstanceTest extends TestCase
         } catch(\Throwable $e){
             static::assertTrue(true);
         }
-    
+        try{
+            $str=$proxy.'';
+            static::assertTrue(false);
+        } catch(\Throwable $e){
+            static::assertTrue(true);
+        }
     }
 
     public static function test_core_static_action()
@@ -63,6 +68,10 @@ class InstanceTest extends TestCase
             public static function static_invoke( $target,  $prop=null, array $args = [], Proxy $proxy = null)
             {
                 return $args[0]+1;
+            }
+            public static function static_toString( $target,  $prop=null,  $args = null, Proxy $proxy = null):string
+            {
+                return 'hello';
             }
 
             public static function static_iterator( $target, $prop = null, $val = null, Proxy $proxy = null): \Traversable
@@ -124,6 +133,7 @@ class InstanceTest extends TestCase
         static::assertTrue(isset($target->test));
         static::assertTrue($proxy->test('q') === 'q' && $proxy->no_test('z') === 'z');
         static::assertTrue($proxy(1)===2);
+        static::assertTrue($proxy.''==='hello');
     }
 
     public static function test_props_static_action()
@@ -191,6 +201,12 @@ class InstanceTest extends TestCase
             static::assertTrue(false);
         } catch(\Error $e){
             static::assertTrue(true);
+        }      
+        try {
+            $str=$proxy.'';
+            static::assertTrue(false);
+        } catch(\Error $e){
+            static::assertTrue(true);
         }
     }
 
@@ -224,6 +240,10 @@ class InstanceTest extends TestCase
             public function invoke( $target,  $prop=null, array $args = [], Proxy $proxy)
             {
                 return $args[0]+1;
+            }
+            public function toString( $target,  $prop=null, $args = null, Proxy $proxy) :string
+            {
+                return 'hello';
             }
 
             public function iterator( $target, $prop = null, $val = null, Proxy $proxy): \Traversable
@@ -283,7 +303,8 @@ class InstanceTest extends TestCase
         unset($proxy->test);
         static::assertTrue(isset($target->test));
         static::assertTrue($proxy->test('q') === 'q' && $proxy->no_test('z') === 'z');
-        static::assertTrue( $proxy(1)===2,'invoke');
+        static::assertTrue( $proxy(1)===2);
+        static::assertTrue($proxy.''==='hello');
     }
 
     public static function test_props_instance_action()
@@ -370,10 +391,10 @@ class InstanceTest extends TestCase
         }catch(\Throwable $e){
             static::assertTrue(true);
         }
-        try{
+        try {
             $proxy->prop();
             static::assertTrue(false);
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             static::assertTrue(true);
         }
         static::assertTrue( $proxy->method(1)===2);
@@ -385,7 +406,6 @@ class InstanceTest extends TestCase
         }
         static::assertTrue($check);
         static::assertTrue($proxy(1)===2);
-        
+        static::assertTrue($proxy.'' === $target);
     }
-
 }

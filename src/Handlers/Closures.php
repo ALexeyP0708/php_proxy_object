@@ -22,6 +22,7 @@ class Closures implements IContract
     protected ?\Closure $call = null;
     protected ?\Closure $invoke = null;
     protected ?\Closure $iterator = null;
+    protected ?\Closure $toString = null;
 
     public function __construct(array $handlers = [], array $handlersProp = [])
     {
@@ -52,6 +53,8 @@ class Closures implements IContract
                 return $this->runCall($target, $prop, $value_or_arguments, $proxy);
             case 'invoke':
                 return $this->runInvoke($target, $value_or_arguments, $proxy);
+            case 'toString':
+                return $this->runToString($target, $proxy);
             case 'iterator':
                 return $this->runIterator($target, $proxy);
         }
@@ -204,6 +207,20 @@ class Closures implements IContract
             return ($this->$action)($target, $arguments, $proxy);
         }
         return TStaticMethods::static_run($action,$target,null,$arguments,$proxy);
+    }  
+    /**
+     * to string object|class
+     * @param object|string $target
+     * @param Proxy $proxy
+     * @return string
+     */
+    protected function runToString($target, Proxy $proxy):string
+    {
+        $action = 'toString';
+        if ($this->$action !== null) {
+            return ($this->$action)($target, $proxy);
+        }
+        return TStaticMethods::static_run($action,$target,null,null,$proxy);
     }
 
     /**

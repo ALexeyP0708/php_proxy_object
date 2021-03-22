@@ -35,7 +35,7 @@ Should not break backward compatibility with version "Y".
 
 ## Description 
 The component creates a proxy object for the observed object or class.  
-Action handlers (get | set | call | isset | unset | invoke | iterator) are assigned for each member of the observable object or class .   
+Action handlers (get | set | call | isset | unset | invoke | toString | iterator) are assigned for each member of the observable object or class .   
 A similar principle is implemented in javascript through the Proxy constructor.   
 When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.   
 
@@ -48,7 +48,7 @@ Where the component can be applied:
 
 ## Install
 
-`composer require alpa/proxy_object:v1.0.7`  - I recommend freezing on version v1.0.7
+`composer require alpa/proxy_object:v1.0.8`  - I recommend freezing on version v1.0.8
 
 
 ## Getting started
@@ -136,7 +136,7 @@ echo $proxy->test; // hello
 echo $proxy->other;// BAY
 ```
 
-example 4 - An example of using all actions:
+example 4 - 
 
 ```php
 <?php
@@ -227,9 +227,12 @@ echo key_exists($target,'_test'); // return false;
 ## Definitions
 Definitions:
 - member(s) - properties and methods of an object or class
-- action (s) -Actions that can be applied to members of a class or object(`set|get|isset|unset|call`). As well  actions that are applied to a object or class  (`invoke | iterator`). Sometimes the definition of "action" is understood as an action handler.
--  handler(s) or action(s) handlers  - A function or method that handles actions
-- proxy - an object with declared magic methods, which will pass actions through itself to the members of the observable object or class/
+- action (s) -Actions that can be applied to members of a class or object(`set|get|isset|unset|call`).
+  As well  actions that are applied to a object or class  (`invoke | toString |iterator`).
+  Sometimes the definition of "action" is understood as an action handler.
+- handler(s) or action(s) handlers  - A function or method that handles actions
+- proxy - an object with declared magic methods, which will pass actions through itself to the members of the observable object or class.
+  The proxy object is a wrapper object that implements magic methods.The default proxy only works with the public members of the observable / class.
 
 ## Create handlers for Proxy object
 
@@ -251,6 +254,7 @@ The following actions exist when accessing the members of an object:
 - unset - member delete;
 - call - member call;
 - invoke - invoke object or class;
+- toString - converting object or class to string;
 - iterator - assigning an iterator when iterating over the members of an object.
 
 
@@ -273,6 +277,8 @@ $handlers=new \Alpa\ProxyObject\Handlers\Closures([
     'call'=>function($target,$prop,$args,$proxy){},
     // handler for invoke object or class 
     'invoke'=>function($target,array $args,$proxy){},
+    // handler for toString object or class 
+    'toString'=>function($target,$proxy):string {},
     // handler for delete members
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
@@ -291,6 +297,7 @@ $handlers->init('unset',function($target,$prop,$proxy):void{});
 $handlers->init('isset',function($target,$prop,$proxy):bool{});
 $handlers->init('call',function($target,$prop, $args,$proxy){});
 $handlers->init('invoke',function($target,$args,$proxy){});
+$handlers->init('toString',function($target,$proxy){});
 $handlers->init('iterator',function($target,$prop,$proxy):\Traversable{});
 ```
 
@@ -383,6 +390,7 @@ or `Alpa\ProxyObject\Handlers\Instance`)
 - call - call member;
 - call_{$name_property} - call a member named $name_property;
 - invoke - invoke object or class;
+- toString - converting object or class to string; 
 - iterator - assigning an iterator to foreach;
 
 
@@ -399,6 +407,7 @@ You can declare the following static methods as handlers :
 - static_call - call member;
 - static_call_{$name_property} - call a member named $name_property;
 - static_invoke - invoke object or class;
+- static_toString - converting object or class to string;
 - static_iterator - assigning an iterator to foreach;
 
 
@@ -479,7 +488,7 @@ class MyHandlers extends Handlers\Instance
      * invoke object
      * by default the member in target must be a method
      * @param object|string $target - observable object
-     * @param null $prop -  object member name
+     * @param null $prop -irrelevant 
      * @param array $value_or_args - arguments to the called function.
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
@@ -487,6 +496,20 @@ class MyHandlers extends Handlers\Instance
     protected  function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
     {
         return parent::invoke($target,$prop,$value_or_args,$proxy);
+    }
+    
+    /**
+     * converting to string object or class
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -irrelevant 
+     * @param null $value_or_args -irrelevant 
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return string
+     */
+    protected  function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    {
+        return parent::toString($target,$prop,$value_or_args,$proxy);
     }
     
     /**
@@ -578,6 +601,19 @@ class MyHandlers extends Handlers\Instance
     protected  static function static_invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
+    }
+    /**
+     * converting to string object or class
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -irrelevant 
+     * @param null $value_or_args -irrelevant 
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return string
+     */
+    protected  static function static_toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    {
+        return parent::static_toString($target,$prop,$value_or_args,$proxy);
     }
     
     /**
@@ -677,9 +713,21 @@ class MyHandlers extends Handlers\InstanceActions
      */
     protected function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
     {
-        return parent::static_invoke($target,$prop,$value_or_args,$proxy);
+        return parent::invoke($target,$prop,$value_or_args,$proxy);
     }
-    
+    /**
+     * converting to string object or class
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -irrelevant 
+     * @param null $value_or_args -irrelevant 
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return string
+     */
+    protected  function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    {
+        return parent::toString($target,$prop,$value_or_args,$proxy);
+    }
     /**
     * creates an iterator for foreach
     * @param object|string $target - observable object or class.
@@ -777,7 +825,21 @@ class MyHandlers extends Handlers\StaticActions
     protected static function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
-    }   
+    } 
+     
+     /**
+     * converting to string object or class
+     * by default the member in target must be a method
+     * @param object|string $target - observable object
+     * @param null $prop -irrelevant 
+     * @param null $value_or_args -irrelevant 
+     * @param Proxy $proxy the proxy object from which the method is called
+     * @return string
+     */
+    protected static function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    {
+        return parent::toString($target,$prop,$value_or_args,$proxy);
+    }  
     /**
     * creates an iterator for foreach
     * @param object|string $target - observable object or class.
@@ -786,6 +848,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
+    
     protected static function iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
     {
         return parent::iterator($target,$prop,$value_or_args,$proxy);
@@ -795,7 +858,7 @@ class MyHandlers extends Handlers\StaticActions
 
 
 Action handlers for a specific member are created similar to action handlers for all properties.
-The exceptions are the "invoke" and "iterator" actions. they only apply to the observable object or class.
+The exceptions are the "invoke"? "toString" and "iterator" actions. they only apply to the observable object or class.
 
 Example:
 
@@ -884,7 +947,7 @@ $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
 ```
 
-For each action (set | get | isset | unset | call | invoke | iterator) you will need to implement working code.  
+For each action (set | get | isset | unset | call | invoke | toString | iterator) you will need to implement working code.  
 
 If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
 

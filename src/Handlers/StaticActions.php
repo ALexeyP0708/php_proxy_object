@@ -14,6 +14,8 @@ abstract class StaticActions  implements IContract
         unset as protected;
         isset as protected;
         call as protected;
+        invoke as protected;
+        toString as protected;
         iterator as protected;
     }
     protected static function getActionPrefix():string
