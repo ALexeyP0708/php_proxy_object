@@ -41,7 +41,7 @@ class InstanceTest extends TestCase
     public static function test_core_static_action()
     {
         $inst = new class() extends Instance {
-            public static function static_get( $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_get( $target, string $prop, $val, Proxy $proxy)
             {
                 return isset($target->$prop) ? $target->$prop . '_' : 'empty';
             }
@@ -51,30 +51,30 @@ class InstanceTest extends TestCase
                 $target->$prop = '_' . $val;
             }
 
-            public static function static_isset( $target, string $prop, $val = null, Proxy $proxy = null): bool
+            public static function static_isset( $target, string $prop, $val, Proxy $proxy): bool
             {
                 return true;
             }
 
-            public static function static_unset( $target, string $prop, $val = null, Proxy $proxy = null): void
+            public static function static_unset( $target, string $prop, $val, Proxy $proxy): void
             {
 
             }
 
-            public static function static_call( $target, string $prop, array $args = [], Proxy $proxy = null)
+            public static function static_call( $target, string $prop, array $args, Proxy $proxy)
             {
                 return $args[0];
             }
-            public static function static_invoke( $target,  $prop=null, array $args = [], Proxy $proxy = null)
+            public static function static_invoke( $target,  $prop, array $args, Proxy $proxy)
             {
                 return $args[0]+1;
             }
-            public static function static_toString( $target,  $prop=null,  $args = null, Proxy $proxy = null):string
+            public static function static_toString( $target,  $prop,  $args, Proxy $proxy):string
             {
                 return 'hello';
             }
 
-            public static function static_iterator( $target, $prop = null, $val = null, Proxy $proxy = null): \Traversable
+            public static function static_iterator( $target, $prop, $val, Proxy $proxy): \Traversable
             {
                 $props = array_keys(get_object_vars($target));
                 return new class($props, $proxy) implements \Iterator {
@@ -139,7 +139,7 @@ class InstanceTest extends TestCase
     public static function test_props_static_action()
     {
         $inst = new class() extends Instance {
-            public static function static_get_test( $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_get_test( $target, string $prop, $val, Proxy $proxy)
             {
                 return $target->$prop . '_';
             }
@@ -149,12 +149,12 @@ class InstanceTest extends TestCase
                 $target->test = '_' . $val;
             }
 
-            public static function static_isset_test( $target, string $prop, $val = null, Proxy $proxy)
+            public static function static_isset_test( $target, string $prop, $val, Proxy $proxy)
             {
                 return false;
             }
 
-            public static function static_unset_test( $target, string $prop, $val = null, Proxy $proxy = null)
+            public static function static_unset_test( $target, string $prop, $val, Proxy $proxy)
             {
 
             }
@@ -213,7 +213,7 @@ class InstanceTest extends TestCase
     public static function test_core_instance_action()
     {
         $inst = new class() extends Instance {
-            public function get( $target, string $prop, $val = null, Proxy $proxy)
+            public function get( $target, string $prop, $val, Proxy $proxy)
             {
                 return isset($target->$prop) ? $target->$prop . '_' : 'empty';
             }
@@ -223,30 +223,30 @@ class InstanceTest extends TestCase
                 $target->$prop = '_' . $val;
             }
 
-            public function isset( $target, string $prop, $val = null, Proxy $proxy): bool
+            public function isset( $target, string $prop, $val, Proxy $proxy): bool
             {
                 return true;
             }
 
-            public function unset( $target, string $prop, $val = null, Proxy $proxy): void
+            public function unset( $target, string $prop, $val, Proxy $proxy): void
             {
 
             }
 
-            public function call( $target, string $prop, array $args = [], Proxy $proxy)
+            public function call( $target, string $prop, array $args, Proxy $proxy)
             {
                 return $args[0];
             }
-            public function invoke( $target,  $prop=null, array $args = [], Proxy $proxy)
+            public function invoke( $target,  $prop, array $args, Proxy $proxy)
             {
                 return $args[0]+1;
             }
-            public function toString( $target,  $prop=null, $args = null, Proxy $proxy) :string
+            public function toString( $target,  $prop, $args, Proxy $proxy) :string
             {
                 return 'hello';
             }
 
-            public function iterator( $target, $prop = null, $val = null, Proxy $proxy): \Traversable
+            public function iterator( $target, $prop, $val, Proxy $proxy): \Traversable
             {
                 $props = array_keys(get_object_vars($target));
                 return new class($props, $proxy) implements \Iterator {
@@ -310,7 +310,7 @@ class InstanceTest extends TestCase
     public static function test_props_instance_action()
     {
         $inst = new class() extends Instance {
-            public function get_test( $target, string $prop, $val = null, Proxy $proxy)
+            public function get_test( $target, string $prop, $val, Proxy $proxy)
             {
                 return $target->$prop . '_';
             }
@@ -320,17 +320,17 @@ class InstanceTest extends TestCase
                 $target->test = '_' . $val;
             }
 
-            public function isset_test( $target, string $prop, $val = null, Proxy $proxy)
+            public function isset_test( $target, string $prop, $val, Proxy $proxy)
             {
                 return false;
             }
 
-            public function unset_test( $target, string $prop, $val = null, Proxy $proxy)
+            public function unset_test( $target, string $prop, $val, Proxy $proxy)
             {
 
             }
 
-            public function call_test( $target, string $prop, $args = [], Proxy $proxy)
+            public function call_test( $target, string $prop, $args, Proxy $proxy)
             {
                 return $args[0];
             }
@@ -353,7 +353,7 @@ class InstanceTest extends TestCase
     public static function test_default_action_for_class()
     {
         $inst = new class() extends Instance {
-            protected static function static_invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+            protected static function static_invoke($target, $prop, array $value_or_args, Proxy $proxy)
             {
                 return $value_or_args[0]+1;
             } 

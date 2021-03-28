@@ -24,6 +24,11 @@ class Closures implements IContract
     protected ?\Closure $iterator = null;
     protected ?\Closure $toString = null;
 
+    /**
+     * Closures constructor.
+     * @param array $handlers Handlers for actions. Actions - get|set|isset|unset|call|iterator|invoke|toString  
+     * @param array $handlersProp Handlers for members actions. Actions - get|set|isset|unset|call|iterator|invoke|toString
+     */
     public function __construct(array $handlers = [], array $handlersProp = [])
     {
         foreach ($handlers as $member => $call) {
@@ -36,7 +41,16 @@ class Closures implements IContract
         }
     }
 
-    public function run(string $action, $target, ?string $prop = null, $value_or_arguments = null, Proxy $proxy)
+    /**
+     * @param string $action
+     * @param object|string $target
+     * @param string|null $prop
+     * @param array|mixed $value_or_arguments
+     * @param Proxy $proxy
+     * @return bool|mixed|string|\Traversable
+     * @throws \Exception
+     */
+    public function run(string $action, $target, ?string $prop, $value_or_arguments, Proxy $proxy)
     {
         switch ($action) {
             case 'get':
@@ -61,8 +75,9 @@ class Closures implements IContract
     }
 
     /**
-     * initializes handlers for specific actions (get | set | unset | isset | call | invoke | iterator)
-     * @param string $action get | set | unset | isset | call The action for which you want to install the handler
+     * initializes handlers for specific actions
+     * 
+     * @param string $action Actions - get | set | unset | isset | call | invoke | iterator | toString .  
      * @param callable $handler A handler that will process a specific action
      * @return bool  Indicates whether a handler is set
      */
@@ -80,8 +95,8 @@ class Closures implements IContract
 
     /**
      * initializes handlers for specific actions properties
-     * @param string $action get | set | unset | isset | call The action for which you want to install the handler
-     * @param string $prop the property for which the handler is intended
+     * @param string $action  Actions - get | set | unset | isset | call | invoke | iterator | toString .
+     * @param string $prop the member for which the handler is intended
      * @param callable $handler A handler that will process a specific property action
      * @return bool  Indicates whether a handler is set
      */
@@ -99,8 +114,9 @@ class Closures implements IContract
     }
 
     /**
+     * Get action.
      * runs handler for the property with the 'get' action
-     * @param object|string $target
+     * @param object|string $target  observable object/class
      * @param string $prop
      * @param Proxy $proxy
      * @return mixed
@@ -117,10 +133,11 @@ class Closures implements IContract
     }
 
     /**
+     * Set action 
      * runs handler for the property with the 'set' action
-     * @param object|string $target
-     * @param string $prop
-     * @param $value
+     * @param object|string $target  observable object/class
+     * @param string $prop member of object /class
+     * @param mixed $value
      * @param Proxy $proxy
      * @return mixed
      */
@@ -137,9 +154,10 @@ class Closures implements IContract
     }
 
     /**
+     * Isset action
      * runs handler for the property with the 'isset' action
-     * @param object|string $target
-     * @param string $prop
+     * @param object|string $target  observable object/class
+     * @param string $prop  member of object /class
      * @param Proxy $proxy
      * @return bool
      */
@@ -155,9 +173,10 @@ class Closures implements IContract
     }
 
     /**
+     * Unset action
      * runs handler for the property with the 'unset' action
-     * @param object|string $target
-     * @param string $prop
+     * @param object|string $target  observable object/class
+     * @param string $prop  member of object /class
      * @param Proxy|null $proxy
      * @return void
      */
@@ -174,13 +193,15 @@ class Closures implements IContract
     }
 
     /**
+     * Call Action.
      * runs handler for the property with the 'call' action
      * by default the member in target must be a method
-     * @param object|string $target
-     * @param string $prop
-     * @param array $arguments
+     * @param object|string $target observable object/class
+     * @param string $prop member of object / class
+     * @param array $arguments Execution arguments
      * @param Proxy $proxy
      * @return mixed
+     * @throws \Exception
      */
     protected function runCall($target, string $prop, array $arguments, Proxy $proxy)
     {
@@ -191,14 +212,16 @@ class Closures implements IContract
             return ($this->$action)($target, $prop, $arguments, $proxy);
         }
         return TStaticMethods::static_run($action,$target,$prop,$arguments,$proxy);
-    }    
-    
+    }
+
     /**
-     * invoke object
-     * @param object|string $target
+     * Invoke action.
+     * invoke object / class
+     * @param object|string $target observable object/class
      * @param array $arguments
      * @param Proxy $proxy
      * @return mixed
+     * @throws \Exception
      */
     protected function runInvoke($target, array $arguments, Proxy $proxy)
     {
@@ -207,12 +230,15 @@ class Closures implements IContract
             return ($this->$action)($target, $arguments, $proxy);
         }
         return TStaticMethods::static_run($action,$target,null,$arguments,$proxy);
-    }  
+    }
+
     /**
-     * to string object|class
-     * @param object|string $target
+     * ToString action.
+     * to string object or class
+     * @param object|string $target observable object/class
      * @param Proxy $proxy
      * @return string
+     * @throws \Exception
      */
     protected function runToString($target, Proxy $proxy):string
     {
@@ -224,7 +250,8 @@ class Closures implements IContract
     }
 
     /**
-     * @param $target
+     * Iterator action.
+     * @param object|string $target observable object/class
      * @param Proxy|null $proxy
      * @return \Traversable
      * @throws \Exception
@@ -237,7 +264,7 @@ class Closures implements IContract
         return TStaticMethods::static_run('iterator',$target,null,null,$proxy);
     }
 
-    public static function static_run(string $action,  $target, ?string $prop = null, $value_or_arguments = null, Proxy $proxy)
+    public static function static_run(string $action,  $target, ?string $prop, $value_or_arguments, Proxy $proxy)
     {
 
     }

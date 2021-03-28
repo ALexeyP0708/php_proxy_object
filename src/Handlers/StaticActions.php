@@ -22,7 +22,7 @@ abstract class StaticActions  implements IContract
     {
         return '';
     }
-    public function run(string $action, $target, ?string $prop = null, $value_or_args = null, Proxy $proxy)
+    public function run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
         
     }

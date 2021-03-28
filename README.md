@@ -61,11 +61,11 @@ use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance 
 {
-    protected static function static_get( $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;        
     }
-    protected static function static_get_test( $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get_test( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;        
     }
@@ -92,11 +92,11 @@ class MyHandlers extends Handlers\Instance
     {
         $this->prefix=$prefix;
     }
-    protected function get( $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected function get( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;        
     }
-    protected function get_test( $target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected function get_test( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;        
     }
@@ -428,7 +428,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected function get ($target,string $prop,$value_or_args=null,Proxy $proxy)
+    protected function get ($target,string $prop,$value_or_args,Proxy $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -453,7 +453,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    protected function isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    protected function isset ($target,string $prop,$value_or_args,Proxy $proxy):bool
     {
         return parent::isset($target,$prop,$value_or_args,$proxy);
     }
@@ -466,7 +466,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    protected function unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
+    protected function unset ($target,string $prop,$value_or_args,Proxy $proxy):void
     {
         parent::unset($target,$prop,$value_or_args,$proxy);
     }    
@@ -479,7 +479,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
+    protected function call ($target,string $prop,array $value_or_args,Proxy $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -493,7 +493,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected  function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    protected  function invoke($target, $prop, array $value_or_args, Proxy $proxy)
     {
         return parent::invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -507,7 +507,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return string
      */
-    protected  function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    protected  function toString($target, $prop,  $value_or_args, Proxy $proxy):string
     {
         return parent::toString($target,$prop,$value_or_args,$proxy);
     }
@@ -520,7 +520,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
-    protected function iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    protected function iterator  ($target,$prop,$value_or_args,Proxy $proxy):\Traversable
     {
         return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
@@ -533,7 +533,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected static function static_get ($target,string $prop,$value_or_args=null,Proxy $proxy)
+    protected static function static_get ($target,string $prop,$value_or_args,Proxy $proxy)
     {
        return  parent::static_get($target,$prop,$value_or_args,$proxy);
     }    
@@ -558,7 +558,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    protected static function static_isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    protected static function static_isset ($target,string $prop,$value_or_args,Proxy $proxy):bool
     {
         return parent::static_isset($target,$prop,$value_or_args,$proxy);
     }
@@ -571,7 +571,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    protected static function static_unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
+    protected static function static_unset ($target,string $prop,$value_or_args,Proxy $proxy):void
     {
         parent::static_unset($target,$prop,$value_or_args,$proxy);
     }    
@@ -598,7 +598,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected  static function static_invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    protected  static function static_invoke($target, $prop, array $value_or_args, Proxy $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -611,7 +611,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return string
      */
-    protected  static function static_toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    protected  static function static_toString($target, $prop,  $value_or_args, Proxy $proxy):string
     {
         return parent::static_toString($target,$prop,$value_or_args,$proxy);
     }
@@ -624,7 +624,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
-    protected static function static_iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    protected static function static_iterator  ($target,$prop,$value_or_args,Proxy $proxy):\Traversable
     {
         return parent::static_iterator($target,$prop,$value_or_args,$proxy);
     }
@@ -646,7 +646,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected function get ($target,string $prop,$value_or_args=null,Proxy $proxy)
+    protected function get ($target,string $prop,$value_or_args,Proxy $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -671,7 +671,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    protected function isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    protected function isset ($target,string $prop,$value_or_args,Proxy $proxy):bool
     {
         return parent::isset($target,$prop,$value_or_args,$proxy);
     }
@@ -684,7 +684,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    protected function unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
+    protected function unset ($target,string $prop,$value_or_args,Proxy $proxy):void
     {
         parent::unset($target,$prop,$value_or_args,$proxy);
     }    
@@ -697,7 +697,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
+    protected function call ($target,string $prop,array $value_or_args,Proxy $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -711,7 +711,7 @@ class MyHandlers extends Handlers\InstanceActions
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    protected function invoke($target, $prop=null, array $value_or_args, Proxy $proxy)
     {
         return parent::invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -724,7 +724,7 @@ class MyHandlers extends Handlers\InstanceActions
      * @param Proxy $proxy the proxy object from which the method is called
      * @return string
      */
-    protected  function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    protected  function toString($target, $prop,  $value_or_args, Proxy $proxy):string
     {
         return parent::toString($target,$prop,$value_or_args,$proxy);
     }
@@ -736,7 +736,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return \Traversable
     */
-    protected function iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    protected function iterator  ($target,$prop,$value_or_args,Proxy $proxy):\Traversable
     {
         return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
@@ -758,7 +758,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected static function get ($target,string $prop,$value_or_args=null,Proxy $proxy)
+    protected static function get ($target,string $prop,$value_or_args,Proxy $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -783,7 +783,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy  the proxy object from which the method is called
     * @return bool
     */
-    protected static function isset ($target,string $prop,$value_or_args=null,Proxy $proxy):bool
+    protected static function isset ($target,string $prop,$value_or_args,Proxy $proxy):bool
     {
         return parent::isset($target,$prop,$value_or_args,$proxy);
     }
@@ -796,7 +796,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return void
     */
-    public static function unset ($target,string $prop,$value_or_args=null,Proxy $proxy):void
+    public static function unset ($target,string $prop,$value_or_args,Proxy $proxy):void
     {
         parent::unset($target,$prop,$value_or_args,$proxy);
     }    
@@ -809,7 +809,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected static function call ($target,string $prop,array $value_or_args =[],Proxy $proxy)
+    protected static function call ($target,string $prop,array $value_or_args,Proxy $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -822,7 +822,7 @@ class MyHandlers extends Handlers\StaticActions
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected static function invoke($target, $prop=null, array $value_or_args = [], Proxy $proxy)
+    protected static function invoke($target, $prop, array $value_or_args, Proxy $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
     } 
@@ -836,7 +836,7 @@ class MyHandlers extends Handlers\StaticActions
      * @param Proxy $proxy the proxy object from which the method is called
      * @return string
      */
-    protected static function toString($target, $prop=null,  $value_or_args = null, Proxy $proxy):string
+    protected static function toString($target, $prop,  $value_or_args, Proxy $proxy):string
     {
         return parent::toString($target,$prop,$value_or_args,$proxy);
     }  
@@ -849,7 +849,7 @@ class MyHandlers extends Handlers\StaticActions
     * @return \Traversable
     */
     
-    protected static function iterator  ($target,$prop=null,$value_or_args=null,Proxy $proxy):\Traversable
+    protected static function iterator  ($target,$prop,$value_or_args,Proxy $proxy):\Traversable
     {
         return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
@@ -867,11 +867,11 @@ Example:
 use Alpa\ProxyObject\Proxy;
 use Alpa\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance {
-    protected static function static_get($target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get($target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
     }
-    protected static function static_get_test($target,string $prop,$val_or_args=null,Proxy $proxy)
+    protected static function static_get_test($target,string $prop,$val_or_args,Proxy $proxy)
     {
         // $prop==='test';
         return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
@@ -934,10 +934,10 @@ use Alpa\ProxyObject\Handlers\IContract;
 use Alpa\ProxyObject\Proxy;
 class MyHandlersClass implements  IContract
 {
-	public function run(string $action, $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	public function run(string $action, $target,?string $prop,$value_or_arguments,Proxy $proxy)
 	{
 	}
-	public static  function static_run(string $action, $target,?string $prop=null,$value_or_arguments=null,Proxy $proxy)
+	public static  function static_run(string $action, $target,?string $prop,$value_or_arguments,Proxy $proxy)
 	{
 	}
 }
@@ -965,7 +965,7 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 		public function __construct(bool $is_methods=false){
 			$this->is_methods=$is_methods;
 		}
-		protected function isset ( $target,string $prop,$val=null,Proxy $proxy):bool
+		protected function isset ( $target,string $prop,$val,Proxy $proxy):bool
 		{
 			if($this->is_methods){
 				return method_exists($target,$prop);
