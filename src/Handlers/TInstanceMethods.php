@@ -18,7 +18,7 @@ trait TInstanceMethods
     public function run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'invoke', 'toString', 'iterator'])) {
-            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|iterator"');
+            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|toString|iterator"');
         }
         $method = $action;
         $methodProp = null;

@@ -20,7 +20,7 @@ trait TStaticMethods
     public static function static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'invoke', 'toString', 'iterator'])) {
-            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|iterator"');
+            throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|toString|iterator"');
         }
         $method = static::getActionPrefix() . $action;
         $methodProp = null;
