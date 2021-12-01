@@ -1,4 +1,13 @@
 # ProxyObject
+A proxy object is an object that implements all the available magic methods
+that run the corresponding handlers. These handlers perform a number of custom
+actions on the target object.  
+Basically, this behavior is necessary for processing the result when accessing 
+properties or methods of the target object.  
+In simple words:  
+- before getting / writing the value of the property of the target object, it must be processed in the sandbox.
+- before executing the target object method, it needs to be processed in the sandbox.
+
 ## Warning
 ### 1
 From version 1.0.0 to version 1.1.0 is experimental development, where the API will be subject to modification.  
