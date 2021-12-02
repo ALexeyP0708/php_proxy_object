@@ -1,8 +1,8 @@
 <?php
 
-namespace Alpa\ProxyObject;
+namespace Alpa\Tools\ProxyObject;
 
-use Alpa\ProxyObject\Handlers\IContract;
+use Alpa\Tools\ProxyObject\Handlers\IContract;
 
 class Proxy implements \IteratorAggregate
 {

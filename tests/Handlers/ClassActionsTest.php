@@ -1,12 +1,13 @@
 <?php
 
 
-namespace Alpa\ProxyObject\Tests;
+namespace Alpa\Tools\ProxyObject\Tests;
 
 
-use Alpa\ProxyObject\Handlers\InstanceActions;
-use Alpa\ProxyObject\Handlers\StaticActions;
+use Alpa\Tools\ProxyObject\Handlers\InstanceActions;
+use Alpa\Tools\ProxyObject\Handlers\StaticActions;
 use PHPUnit\Framework\TestCase;
+
 
 class ClassActionsTest extends TestCase
 {

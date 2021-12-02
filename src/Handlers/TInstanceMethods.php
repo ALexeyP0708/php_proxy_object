@@ -1,8 +1,8 @@
 <?php
 
-namespace Alpa\ProxyObject\Handlers;
+namespace Alpa\Tools\ProxyObject\Handlers;
 
-use Alpa\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Proxy;
 
 trait TInstanceMethods
 {
@@ -149,7 +149,7 @@ trait TInstanceMethods
      * @return \Traversable
      * @throws \Exception
      */
-    public function iterator($target, $prop, $value_or_args, Proxy $proxy)
+    public function iterator($target, $prop, $value_or_args, Proxy $proxy):\Traversable
     {
         return TStaticMethods::iterator($target, $prop, $value_or_args, $proxy);
     }

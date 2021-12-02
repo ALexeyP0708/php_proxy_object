@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Alpa\ProxyObject\Handlers;
+namespace Alpa\Tools\ProxyObject\Handlers;
 
-use Alpa\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Proxy;
 
 interface IContract
 {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Alpa\ProxyObject\Handlers;
+namespace Alpa\Tools\ProxyObject\Handlers;
 
 
 class  ClassMembersIterator  implements \Iterator {

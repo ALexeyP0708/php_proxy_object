@@ -1,4 +1,6 @@
-# ProxyObject
+# Alpa\Tools\ProxyObject
+
+## Description
 A proxy object is an object that implements all the available magic methods
 that run the corresponding handlers. These handlers perform a number of custom
 actions on the target object.  
@@ -8,7 +10,19 @@ In simple words:
 - before getting / writing the value of the property of the target object, it must be processed in the sandbox.
 - before executing the target object method, it needs to be processed in the sandbox.
 
-## Warning
+The component creates a proxy object for the observed object or class.  
+Action handlers (get | set | call | isset | unset | invoke | toString | iterator) are assigned for each member of the observable object or class .   
+A similar principle is implemented in javascript through the Proxy constructor.   
+When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.
+
+Where the component can be applied:
+- mediator for data validation;
+- access to private data of an object through reflection;
+- dynamic data formation, and generation of other properties;
+- dynamic data requests, for example from a database;
+- other options.
+
+## Note
 ### 1
 From version 1.0.0 to version 1.1.0 is experimental development, where the API will be subject to modification.  
 See the tag description on GitHub for version compatibility.  
@@ -42,22 +56,10 @@ Should not break backward compatibility with version "Y".
 
 
 
-## Description 
-The component creates a proxy object for the observed object or class.  
-Action handlers (get | set | call | isset | unset | invoke | toString | iterator) are assigned for each member of the observable object or class .   
-A similar principle is implemented in javascript through the Proxy constructor.   
-When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.   
-
-Where the component can be applied:
-- mediator for data validation;
-- access to private data of an object through reflection;
-- dynamic data formation, and generation of other properties;
-- dynamic data requests, for example from a database;
-- other options.
 
 ## Install
 
-`composer require alpa/proxy_object` 
+`composer require alpa/tools_proxy_object` 
 
 
 ## Getting started
@@ -66,8 +68,8 @@ example 1:
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance 
 {
     protected static function static_get( $target,string $prop,$val_or_args,Proxy $proxy)
@@ -93,8 +95,8 @@ example 2:
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance 
 {
     public function __construct($prefix)
@@ -127,8 +129,8 @@ example 3:
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 $handlers = new Handlers\Closures();
 $handlers->init('get',function($target,$prop,$proxy){
 	return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;      
@@ -149,8 +151,8 @@ example 4 -
 
 ```php
 <?php
-use \Alpa\ProxyObject\Proxy;
-use \Alpa\ProxyObject\Handlers;
+use \Alpa\Tools\ProxyObject\Proxy;
+use \Alpa\Tools\ProxyObject\Handlers;
 $handlers = new Handlers([
     'get' => function ($target, $name, Proxy $proxy) {
         $name = '_' . $name;
@@ -273,7 +275,7 @@ Example in the constructor
 
 ```php
 <?php
-$handlers=new \Alpa\ProxyObject\Handlers\Closures([
+$handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([
     // handler for members query
     'get'=>function($target,$prop,$proxy){},
     // handler for  members entry
@@ -299,7 +301,7 @@ An example of assigning handlers via the Handlers :: init method
 ```php
 <?php
 
-$handlers=new \Alpa\ProxyObject\Handlers\Closures();
+$handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures();
 $handlers->init('get',function($target,$name,$proxy){});
 $handlers->init('set',function($target,$name,$value,$proxy):void{});
 $handlers->init('unset',function($target,$prop,$proxy):void{});
@@ -314,7 +316,7 @@ An example of assigning handlers for a specific property
 
 ```php
 <?php
-$handlers=new \Alpa\ProxyObject\Handlers\Closures([],[
+$handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([],[
     'get'=>[
         'prop'=>function ($target,$name,$proxy):mixed{}
     ],
@@ -337,7 +339,7 @@ or
 
 ```php
 <?php
-$handlers=new \Alpa\ProxyObject\Handlers\Closures();
+$handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures();
 $handlers->initProp('get','prop',function ($target,$name,$proxy):mixed{});
 $handlers->initProp('set','prop',function ($target,$name,$value,$proxy):void{});
 $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
@@ -353,7 +355,7 @@ Class declaration in which methods will be handlers.
 ```php
 <?php
 
-use Alpa\ProxyObject\Handlers\Instance;
+use Alpa\Tools\ProxyObject\Handlers\Instance;
 class MyHandlers extends Instance
 {
     
@@ -365,7 +367,7 @@ or
 ```php
 <?php
 // to declare only static actions
-use Alpa\ProxyObject\Handlers\StaticActions;
+use Alpa\Tools\ProxyObject\Handlers\StaticActions;
 class MyHandlers extends StaticActions
 {
     
@@ -377,7 +379,7 @@ or
 ```php
 <?php
 // to declare only instance actions
-use Alpa\ProxyObject\Handlers\InstanceActions;
+use Alpa\Tools\ProxyObject\Handlers\InstanceActions;
 class MyHandlers extends InstanceActions
 {
     
@@ -425,8 +427,8 @@ A templates for creating action handlers for all members of an object.
 Template where static actions and actions for an instance are declared
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance
 {
     /**
@@ -643,8 +645,8 @@ Template where only instance actions
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\InstanceActions
 {
     /**
@@ -755,8 +757,8 @@ Template where only static actions
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\StaticActions
 {
     /**
@@ -873,8 +875,8 @@ Example:
 
 ```php
 <?php
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance {
     protected static function static_get($target,string $prop,$val_or_args,Proxy $proxy)
     {
@@ -939,8 +941,8 @@ The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers
 
 ```php
 <?php
-use Alpa\ProxyObject\Handlers\IContract;
-use Alpa\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers\IContract;
+use Alpa\Tools\ProxyObject\Proxy;
 class MyHandlersClass implements  IContract
 {
 	public function run(string $action, $target,?string $prop,$value_or_arguments,Proxy $proxy)
@@ -966,8 +968,8 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 
 ```php
 <?php
-	use Alpa\ProxyObject\Proxy;
-	use Alpa\ProxyObject\Hanclers\Instance;
+	use Alpa\Tools\ProxyObject\Proxy;
+	use Alpa\Tools\ProxyObject\Hanclers\Instance;
 	class MyHandlers extends Instance
 	{
 		protected bool $is_methods=false;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Alpa\ProxyObject\Handlers;
+namespace Alpa\Tools\ProxyObject\Handlers;
 
 abstract class Instance implements IContract
 {

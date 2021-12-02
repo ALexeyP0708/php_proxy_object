@@ -1,10 +1,10 @@
 <?php
 
-namespace Alpa\ProxyObject\Tests;
+namespace Alpa\Tools\ProxyObject\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers\Closures;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers\Closures;
 
 class ClosuresTest extends TestCase
 {

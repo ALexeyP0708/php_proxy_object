@@ -1,9 +1,9 @@
 <?php
 
-namespace Alpa\ProxyObject\Tests;
+namespace Alpa\Tools\ProxyObject\Tests;
 
-use Alpa\ProxyObject\Handlers\Instance;
-use Alpa\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers\Instance;
+use Alpa\Tools\ProxyObject\Proxy;
 use \PHPUnit\Framework\TestCase;
 
 class InstanceTest extends TestCase

@@ -3,9 +3,9 @@
 
 namespace Alpa\ProxyObject\Tests;
 
-use Alpa\ProxyObject\Handlers\Instance;
-use Alpa\ProxyObject\Proxy;
-use Alpa\ProxyObject\Handlers\Closures;
+use Alpa\Tools\ProxyObject\Handlers\Instance;
+use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\Handlers\Closures;
 
 use PHPUnit\Framework\TestCase;
 

@@ -1,5 +1,5 @@
 {
-  "name": "alpa/proxy_object",
+  "name": "alpa/tools_proxy_object",
   "description": "Creates a proxy object and assigns getter / setter handlers to the object's members when accessing them.",
   "minimum-stability": "stable",
   "license": "MIT",
@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Alpa\\ProxyObject\\":"src/" 
+      "Alpa\\Tools\\ProxyObject\\":"src/" 
     }
   },
   "require-dev": {
@@ -22,7 +22,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Alpa\\ProxyObject\\Tests\\":"tests/"
+      "Alpa\\Tools\\Tests\\ProxyObject\\":"tests/"
     }
   }
 }
