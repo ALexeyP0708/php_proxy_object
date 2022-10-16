@@ -408,4 +408,18 @@ class InstanceTest extends TestCase
         static::assertTrue($proxy(1)===2);
         static::assertTrue($proxy.'' === $target);
     }
+    public static function test_other_proxy_class()
+    {
+        $inst = new class() extends Instance {
+        };
+        $target = (object)['test' => 'test'];
+        $proxy = $inst::proxy($target,get_class($inst),OtherProxy::class);
+        static::assertTrue($proxy instanceof OtherProxy);
+        $inst = new class() extends Instance {
+            public static $proxyClass=OtherProxy::class;
+        };
+        $proxy = $inst->newProxy($target);
+        static::assertTrue($proxy instanceof OtherProxy);
+    }
 }
+class OtherProxy extends Proxy{};

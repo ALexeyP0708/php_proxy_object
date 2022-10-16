@@ -46,14 +46,16 @@ trait TStaticMethods
     /**
      * generates a proxy object
      * @param object|string $target
-     * @param IContract|null $handlers
+     * @param IContract|string|null $handlers 
+     * @param string|null $proxyClass
      * @return Proxy
      * @throws \Exception
      */
-    public static function proxy($target, ?IContract $handlers = null): Proxy
+    public static function proxy($target, $handlers = null,?string $proxyClass=null): Proxy
     {
         $handlers = $handlers !== null ? $handlers : static::class;
-        return new Proxy($target, $handlers);
+        $proxyClass=$proxyClass??$handlers::$proxyClass??Proxy::class;
+        return new $proxyClass($target, $handlers);
     }
 
     /**

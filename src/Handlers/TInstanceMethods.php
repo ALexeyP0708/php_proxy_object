@@ -33,11 +33,12 @@ trait TInstanceMethods
 
     /**
      * @param object|string $target observable object/class
+     * @param string|null $proxyClass
      * @return Proxy
      */
-    public function newProxy($target)
+    public function newProxy($target,?string $proxyClass=null):Proxy
     {
-        return TStaticMethods::proxy($target, $this);
+        return TStaticMethods::proxy($target, $this,$proxyClass);
     }
 
     /**

@@ -962,6 +962,40 @@ For each action (set | get | isset | unset | call | invoke | toString | iterator
 
 If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
 
+## Other Proxy Class
+(v>=1.0.11)
+When creating a proxy object by handlers, you can specify which proxy class to use 
+```php
+<?php
+
+    use \Alpa\Tools\ProxyObject\Handlers;
+    final class OtherProxy extends Proxy {
+        
+    }
+    final class MyHandlersClass extends Instance {
+    
+    }
+    $target=(object)[];
+    $proxy = MyHandlersClass::proxy($target,MyHandlersClass::class,OtherProxy::class);
+    var_dump($proxy instanceof OtherProxy);
+    //or 
+    $handlers=new MyHandlersClass();
+    $proxy=$handlers->newProxy($target,OtherProxy::class);
+    var_dump($proxy instanceof OtherProxy);
+    // or 
+    final class MyHandlersClass2 extends Instance {   
+        public static $proxyClass = OtherProxy::class;
+    }
+    $proxy = MyHandlersClass::proxy($target,MyHandlersClass2::class);
+    var_dump($proxy instanceof OtherProxy);
+    // or
+    $handlers=new MyHandlersClass2();
+    $proxy=$handlers->newProxy($target);
+    var_dump($proxy instanceof OtherProxy);
+    
+?>
+```
+
 ## Difficulties
 
 For a member of a proxy object, it doesn't make sense to apply checks such as `property_exists` or` method_exists` or similar, since they will be applied directly to the proxy object. Therefore, when working with a proxy, always use the `isset` check.  If you have complex logic where you need to check both properties and methods, then it is recommended to separate the logic for working with properties and the logic for working with methods.
