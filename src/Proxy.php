@@ -45,20 +45,22 @@ class Proxy implements \IteratorAggregate
      * @param null $value_or_arguments the value from the "set" and "call" actions
      * @return mixed  returned result of "get" "isset" "call" actions. 
      */
-    protected function run(string $action, ?string $prop = null, $value_or_arguments = null)
+    protected function &run(string $action, ?string $prop = null, $value_or_arguments = null)
     {
+        self::refNoticeErrorHandler();
         if (is_string($this->handlers)) {
             return $this->handlers::static_run($action, $this->target, $prop, $value_or_arguments, $this);
         } else {
             return $this->handlers->run($action, $this->target, $prop, $value_or_arguments, $this);
         }
+        restore_error_handler();
     }
-
-    public function __get(string $name)
+    // __get must return by reference
+    public function &__get(string $name)
     {
         return $this->run('get', $name);
     }
-
+    // __set donot arguments by reference
     public function __set(string $name, $value)
     {
         $this->run('set', $name, $value);
@@ -74,11 +76,11 @@ class Proxy implements \IteratorAggregate
         $this->run('unset', $name);
     }
 
-    public function __call($name, $arguments)
+    public function &__call($name, $arguments)
     {
         return $this->run('call', $name, $arguments);
     }
-    public function __invoke(...$arguments)
+    public function &__invoke(...$arguments)
     {
         return $this->run('invoke', null, $arguments);
     }    
@@ -94,5 +96,18 @@ class Proxy implements \IteratorAggregate
             return $iterator;
         }
         return new \ArrayIterator([]);
+    }
+    private  static function refNoticeErrorHandler(bool $prev_restore = false)
+    {
+        $prev_handler_error = null;
+        $prev_handler_error = set_error_handler(function (...$args) use (&$prev_handler_error, $prev_restore) {
+            if ($args[0] == 8) {
+                if ($prev_restore) {
+                    restore_error_handler();
+                }
+                return true;
+            }
+            return $prev_handler_error($args);
+        }, E_NOTICE);
     }
 }

@@ -6,7 +6,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 use Alpa\Tools\ProxyObject\Proxy;
 
-abstract class StaticActions  implements IContract
+abstract class StaticActions implements IContract
 {
     use TStaticMethods {
         get as protected;
@@ -18,12 +18,14 @@ abstract class StaticActions  implements IContract
         toString as protected;
         iterator as protected;
     }
-    protected static function getActionPrefix():string
+
+    protected static function getActionPrefix(): string
     {
         return '';
     }
-    public function run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+
+    public function &run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
-        
+
     }
 }

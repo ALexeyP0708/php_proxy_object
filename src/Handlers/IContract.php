@@ -15,8 +15,8 @@ interface IContract
      * @param Proxy $proxy
      * @return mixed
      */
-    public function run(string $action, $target,?string $prop,$value_or_arguments,Proxy $proxy);
-    
+    public function &run(string $action, $target, ?string $prop, $value_or_arguments, Proxy $proxy);
+
     /**
      * @param string $action
      * @param object|string $target
@@ -25,5 +25,5 @@ interface IContract
      * @param Proxy $proxy
      * @return mixed
      */
-    public static function static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy);
+    public static function &static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy);
 }

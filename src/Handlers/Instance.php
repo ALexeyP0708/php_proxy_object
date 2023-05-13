@@ -5,7 +5,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 abstract class Instance implements IContract
 {
-    use TInstanceMethods,TStaticMethods {
+    use TInstanceMethods, TStaticMethods {
         TInstanceMethods::get insteadof TStaticMethods;
         TInstanceMethods::get as protected;
         TInstanceMethods::set insteadof TStaticMethods;
@@ -31,7 +31,8 @@ abstract class Instance implements IContract
         TStaticMethods::toString as protected static_toString;
         TStaticMethods::iterator as protected static_iterator;
     }
-    protected  static function getActionPrefix(): string
+
+    protected static function getActionPrefix(): string
     {
         return 'static_';
     }

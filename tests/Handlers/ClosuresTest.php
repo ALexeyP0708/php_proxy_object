@@ -29,7 +29,7 @@ class ClosuresTest extends TestCase
             public ?\Closure $iterator = null;
             public ?\Closure $invoke = null;
 
-            public function runGet($target, string $prop, Proxy $proxy)
+            public function &runGet($target, string $prop, Proxy $proxy)
             {
                 return parent::runGet($target, $prop, $proxy);
             }
@@ -49,11 +49,11 @@ class ClosuresTest extends TestCase
                 parent::runUnset($target, $prop, $proxy);
             }
 
-            public function runCall($target, string $prop, array $arguments, Proxy $proxy)
+            public function & runCall($target, string $prop, array $arguments, Proxy $proxy)
             {
                 return parent::runCall($target, $prop, $arguments, $proxy);
             }
-            public function runInvoke($target,array $arguments, Proxy $proxy)
+            public function & runInvoke($target,array $arguments, Proxy $proxy)
             {
                 return parent::runInvoke($target, $arguments, $proxy);
             }

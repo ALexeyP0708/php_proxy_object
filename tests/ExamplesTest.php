@@ -111,7 +111,7 @@ class ExamplesTest extends TestCase
     public static function test_example_3()
     {
         $inst = new class () extends Instance {
-            protected static function static_get( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected static function &static_get( $target, string $prop, $val_or_args, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
             }
@@ -138,7 +138,7 @@ class ExamplesTest extends TestCase
                 $this->prefix = $prefix;
             }
 
-            protected function get( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected function &get( $target, string $prop, $val_or_args, Proxy $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
             }

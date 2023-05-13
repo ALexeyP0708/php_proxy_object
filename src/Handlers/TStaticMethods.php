@@ -17,7 +17,7 @@ trait TStaticMethods
      * @return mixed|bool if isset action then boolean type else mixed
      * @throws \Exception
      */
-    public static function static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+    public static function &static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'invoke', 'toString', 'iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|toString|iterator"');
@@ -46,15 +46,15 @@ trait TStaticMethods
     /**
      * generates a proxy object
      * @param object|string $target
-     * @param IContract|string|null $handlers 
+     * @param IContract|string|null $handlers
      * @param string|null $proxyClass
      * @return Proxy
      * @throws \Exception
      */
-    public static function proxy($target, $handlers = null,?string $proxyClass=null): Proxy
+    public static function proxy($target, $handlers = null, ?string $proxyClass = null): Proxy
     {
         $handlers = $handlers !== null ? $handlers : static::class;
-        $proxyClass=$proxyClass??$handlers::$proxyClass??Proxy::class;
+        $proxyClass = $proxyClass ?? $handlers::$proxyClass ?? Proxy::class;
         return new $proxyClass($target, $handlers);
     }
 
@@ -67,7 +67,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed it is necessary to return the result
      */
-    public static function get($target, string $prop, $value_or_args, Proxy $proxy)
+    public static function &get($target, string $prop, $value_or_args, Proxy $proxy)
     {
         if (is_string($target)) {
             return $target::$$prop;
@@ -139,7 +139,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    public static function call($target, string $prop, array $value_or_args, Proxy $proxy)
+    public static function & call($target, string $prop, array $value_or_args, Proxy $proxy)
     {
         if (is_string($target)) {
             return $target::{$prop}(...$value_or_args);
@@ -156,7 +156,7 @@ trait TStaticMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    public static function invoke($target, $prop, array $value_or_args, Proxy $proxy)
+    public static function & invoke($target, $prop, array $value_or_args, Proxy $proxy)
     {
         if (is_string($target)) {
             return ($target)(...$value_or_args);

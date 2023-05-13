@@ -15,7 +15,7 @@ trait TInstanceMethods
      * @return mixed
      * @throws \Exception
      */
-    public function run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+    public function & run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'invoke', 'toString', 'iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|toString|iterator"');
@@ -36,9 +36,9 @@ trait TInstanceMethods
      * @param string|null $proxyClass
      * @return Proxy
      */
-    public function newProxy($target,?string $proxyClass=null):Proxy
+    public function newProxy($target, ?string $proxyClass = null): Proxy
     {
-        return TStaticMethods::proxy($target, $this,$proxyClass);
+        return TStaticMethods::proxy($target, $this, $proxyClass);
     }
 
     /**
@@ -50,7 +50,7 @@ trait TInstanceMethods
      * @param Proxy $proxy
      * @return mixed
      */
-    public function get($target, string $prop, $value_or_args, Proxy $proxy)
+    public function & get($target, string $prop, $value_or_args, Proxy $proxy)
     {
         return TStaticMethods::get($target, $prop, $value_or_args, $proxy);
     }
@@ -69,7 +69,7 @@ trait TInstanceMethods
     }
 
     /**
-     * Isset action. 
+     * Isset action.
      * Checking is  set member handler
      * @param object|string $target observable object/class
      * @param string $prop
@@ -83,7 +83,7 @@ trait TInstanceMethods
     }
 
     /**
-     * Unset action. 
+     * Unset action.
      * Member delete handler
      * @param object|string $target observable object/class
      * @param string $prop
@@ -96,7 +96,7 @@ trait TInstanceMethods
     }
 
     /**
-     * Call action. 
+     * Call action.
      * Member call handler
      * by default the member in target must be a method
      * @param object|string $target - observable object/class
@@ -105,13 +105,13 @@ trait TInstanceMethods
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    public function call($target, string $prop, array $value_or_args, Proxy $proxy)
+    public function & call($target, string $prop, array $value_or_args, Proxy $proxy)
     {
         return TStaticMethods::call($target, $prop, $value_or_args, $proxy);
     }
 
     /**
-     * Invoke action. 
+     * Invoke action.
      * Object or class invoke.
      * @param object|string $target observable object/class
      * @param null $prop
@@ -119,13 +119,13 @@ trait TInstanceMethods
      * @param Proxy $proxy
      * @return mixed
      */
-    public function invoke($target, $prop, array $value_or_args, Proxy $proxy)
+    public function & invoke($target, $prop, array $value_or_args, Proxy $proxy)
     {
         return TStaticMethods::invoke($target, $prop, $value_or_args, $proxy);
     }
 
     /**
-     * ToString action. 
+     * ToString action.
      * Converting an object or class to a string
      * by default the member in target must be a method
      * @param object|string $target observable object/class
@@ -140,7 +140,7 @@ trait TInstanceMethods
     }
 
     /**
-     * Iterator action. 
+     * Iterator action.
      * creates an iterator for foreach
      * Returns an empty iterator for the class.
      * @param object|string $target observable object
@@ -150,7 +150,7 @@ trait TInstanceMethods
      * @return \Traversable
      * @throws \Exception
      */
-    public function iterator($target, $prop, $value_or_args, Proxy $proxy):\Traversable
+    public function iterator($target, $prop, $value_or_args, Proxy $proxy): \Traversable
     {
         return TStaticMethods::iterator($target, $prop, $value_or_args, $proxy);
     }
