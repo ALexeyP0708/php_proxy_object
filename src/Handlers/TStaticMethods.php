@@ -69,6 +69,29 @@ trait TStaticMethods
      */
     public static function &get($target, string $prop, $value_or_args, Proxy $proxy)
     {
+        // This check is required, since when the result is returned by reference, the property is dynamically created if it does not exist.
+        // In PHP 8.2 this behavior is deprecated
+        // start check error
+        $answer=null;
+        $before_error_handler=null;
+        $check=false;
+        $before_error_handler=set_error_handler(function(...$args)use(&$before_error_handler,&$check){
+            
+            if(substr($args[1],0,18)==='Undefined property') {
+                $check = true;
+            }
+            return !is_null($before_error_handler) ? $before_error_handler(...$args):false;
+        },E_NOTICE|E_WARNING);
+        if(is_string($target)){
+            $target::$$prop;
+        } else {
+            $target->$prop;
+        }
+        restore_error_handler();
+        if($check){
+            return $answer;
+        }
+        // end check error
         if (is_string($target)) {
             return $target::$$prop;
         }
@@ -144,7 +167,7 @@ trait TStaticMethods
         if (is_string($target)) {
             return $target::{$prop}(...$value_or_args);
         }
-        $target->$prop(...$value_or_args);
+        return $target->$prop(...$value_or_args);
     }
 
     /**

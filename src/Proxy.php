@@ -60,7 +60,9 @@ class Proxy implements \IteratorAggregate
     {
         return $this->run('get', $name);
     }
-    // __set donot arguments by reference
+    
+    //Note:None of the arguments of these magic methods can be passed by reference.
+    // https://www.php.net/manual/en/language.oop5.overloading.php
     public function __set(string $name, $value)
     {
         $this->run('set', $name, $value);
@@ -76,10 +78,15 @@ class Proxy implements \IteratorAggregate
         $this->run('unset', $name);
     }
 
+    //Note:None of the arguments of these magic methods can be passed by reference.
+    // https://www.php.net/manual/en/language.oop5.overloading.php
     public function &__call($name, $arguments)
     {
         return $this->run('call', $name, $arguments);
     }
+
+    //Note:None of the arguments of these magic methods can be passed by reference.
+    // https://www.php.net/manual/en/language.oop5.overloading.php
     public function &__invoke(...$arguments)
     {
         return $this->run('invoke', null, $arguments);

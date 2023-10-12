@@ -1,4 +1,8 @@
-# Alpa\Tools\ProxyObject
+## Dev work plan 
+- Изменить IContract на ActionsInterface
+##Changes
+v.1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke)
+
 
 ## Description
 A proxy object is an object that implements all the available magic methods
@@ -76,7 +80,7 @@ class MyHandlers extends Handlers\Instance
     {
         return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;        
     }
-    protected static function static_get_test( $target,string $prop,$val_or_args,Proxy $proxy)
+    protected static function & static_get_test( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;        
     }
@@ -103,7 +107,7 @@ class MyHandlers extends Handlers\Instance
     {
         $this->prefix=$prefix;
     }
-    protected function get( $target,string $prop,$val_or_args,Proxy $proxy)
+    protected function  & get( $target,string $prop,$val_or_args,Proxy $proxy)
     {
         return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;        
     }

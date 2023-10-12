@@ -59,7 +59,7 @@ class Closures implements IContract
                 $this->runSet($target, $prop, $value_or_arguments, $proxy);
                 break;
             case 'isset':
-                $answer=$this->runIsset($target, $prop, $proxy);
+                $answer = $this->runIsset($target, $prop, $proxy);
                 return $answer;
             case 'unset':
                 $this->runUnset($target, $prop, $proxy);
@@ -69,10 +69,10 @@ class Closures implements IContract
             case 'invoke':
                 return $this->runInvoke($target, $value_or_arguments, $proxy);
             case 'toString':
-                $answer=$this->runToString($target, $proxy);
+                $answer = $this->runToString($target, $proxy);
                 return $answer;
             case 'iterator':
-                $answer=$this->runIterator($target, $proxy);
+                $answer = $this->runIterator($target, $proxy);
                 return $answer;
         }
     }
@@ -210,7 +210,7 @@ class Closures implements IContract
     {
         $action = 'call';
         if (array_key_exists($prop, $this->properties[$action])) {
-            return $this->properties[$action][$prop]($target, $prop, $arguments, $proxy);
+            return  $this->properties[$action][$prop]($target, $prop, $arguments, $proxy);;
         } else if ($this->$action !== null) {
             return ($this->$action)($target, $prop, $arguments, $proxy);
         }
@@ -226,7 +226,7 @@ class Closures implements IContract
      * @return mixed
      * @throws \Exception
      */
-    protected function & runInvoke($target, array $arguments, Proxy $proxy)
+    protected function &runInvoke($target, array $arguments, Proxy $proxy)
     {
         $action = 'invoke';
         if ($this->$action !== null) {

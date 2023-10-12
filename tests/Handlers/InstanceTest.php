@@ -13,34 +13,111 @@ class InstanceTest extends TestCase
         $inst = new class() extends Instance {
         };
         $HandlersClass = get_class($inst);
-        $target = (object)['test' => 'test'];
+        $target = new class {
+            public string $test = 'test';
+            public function call():bool
+            {
+                return true;
+            }
+        };
         $proxy = $HandlersClass::proxy($target);
-        static::assertTrue($proxy->test === 'test' && $target->test === $proxy->test);
+        static::assertTrue($proxy->test === 'test' && $target->test === $proxy->test, 'test action "get"');
         $proxy->test = 'success';
-        static::assertTrue($target->test === 'success');
-        static::assertTrue(isset($proxy->test) && !isset($proxy->no_prop));
+        static::assertTrue($target->test === 'success', 'test action "set"');
+        static::assertTrue(isset($proxy->test) && !isset($proxy->no_prop), 'test action "isset"');
         foreach ($proxy as $key => $value) {
-            static::assertTrue(isset($target->$key) && $target->$key === $value);
+            static::assertTrue(isset($target->$key) && $target->$key === $value, 'test action "iterable"');
         }
         unset($proxy->test);
-        static::assertTrue(!isset($target->test));
-        $check=false;
+        static::assertTrue(!isset($target->test), 'test action "unset"');
+        self::assertTrue($proxy->call(), 'test action - "call default"');
+        $check = false;
         try {
             $proxy();
         } catch (\Throwable $e) {
-            $check=true;
+            $check = true;
         } finally {
-            self::assertTrue($check);
+            self::assertTrue($check, 'test action - "invoke default"');
         }
-        
-        $check=false;
+        $check = false;
         try {
             $str = $proxy . '';
         } catch (\Throwable $e) {
-            $check=true;
+            $check = true;
+        } finally {
+            self::assertTrue($check, 'test action - "toString default"');
+        }
+    }
+
+    public static function test_default_static_action_by_reference()
+    {
+        $target = new class {
+            public string $prop = 'hello';
+
+            public function & getProp(): string
+            {
+                return $this->prop;
+            }
+
+            public function setProp(&$var)
+            {
+                $this->prop =& $var;
+            }
+        };
+        $inst = new class() extends Instance {
+            public static function & static_invoke($target, $prop, array $args, Proxy $proxy)
+            {
+                return $target->prop;
+            }
+        };
+        $HandlersClass = get_class($inst);
+        $proxy = $HandlersClass::proxy($target);
+        $proxy->new_prop = 'hello';
+        static::assertTrue($target->new_prop === 'hello');
+        $var = &$proxy->new_prop;
+        $var = 'bay';
+        static::assertTrue($target->new_prop === 'bay');
+        $check = false;
+        unset ($var);
+        $var = 'hello';
+        // set variable by reference 
+        try {
+            $proxy->new_prop = &$var;
+        } catch (\Error $e) {
+            //Error: Cannot assign by reference to overloaded object
+            $check = true;
         } finally {
             self::assertTrue($check);
         }
+        unset ($var);
+        $var = $proxy->getProp();
+        $target->prop = 'bay';
+        self::assertTrue($var !== $target->prop);
+        $var = &$proxy->getProp();
+        $target->prop = 'hello';
+        self::assertSame($target->prop, $var);
+        $var = 'bay';
+        self::assertSame($target->prop, $var);
+        unset ($var);
+        $var = 'HELLO';
+        $proxy->setProp($var);
+        self::assertSame($target->prop, $var);
+        $var = 'hello';
+        //Note:None of the arguments of these magic methods can be passed by reference.
+        // https://www.php.net/manual/en/language.oop5.overloading.php
+        self::assertNotSame($target->prop, $var);
+        
+        // iterable
+        // Variables are not passed by reference in iterations. This is due to the restrictions of the Interator class.
+        
+        // invoke
+        unset($var);
+        $var=&$proxy();
+        $var='QWER';
+        self::assertSame($target->prop, $var);
+        unset($var);
+        //Note:None of the arguments of these magic methods can be passed by reference.
+        // https://www.php.net/manual/en/language.oop5.overloading.php
     }
 
     public static function test_core_static_action()
