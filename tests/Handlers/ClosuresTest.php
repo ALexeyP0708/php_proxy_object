@@ -506,6 +506,16 @@ class ClosuresTest extends TestCase
             $handlers->runCall($class, 'prop', [], $emptyProxy) === 'bay'
         );
     }
+    
+    public function test_runCall_reference()
+    {
+        
+    }    
+    
+    public function test_runCall_for_class_reference()
+    {
+        
+    }
 
     public function test_runIterator()
     {
@@ -569,6 +579,10 @@ class ClosuresTest extends TestCase
             }), [1], $emptyProxy) === 2);
     }
 
+    public function test_runInvoke_reference()
+    {}
+    public function test_runInvoke_for_class_reference()
+    {}
     public function test_runIterator_for_class()
     {
         $class = get_class(new class() {

@@ -8,6 +8,10 @@ use \PHPUnit\Framework\TestCase;
 
 class InstanceTest extends TestCase
 {
+   
+    /**
+     * Test the default actions that are assigned by StaticActions class ( static members )
+     */
     public static function test_default_static_action()
     {
         $inst = new class() extends Instance {
@@ -49,6 +53,10 @@ class InstanceTest extends TestCase
         }
     }
 
+    /**
+     * Test to return by result reference for default actions (StaticActions class) ( static members )
+     * Warn: For other variantes, tests are not written since this test is sufficient.
+     */
     public static function test_default_static_action_by_reference()
     {
         $target = new class {
@@ -63,6 +71,7 @@ class InstanceTest extends TestCase
             {
                 $this->prop =& $var;
             }
+            
         };
         $inst = new class() extends Instance {
             public static function & static_invoke($target, $prop, array $args, Proxy $proxy)
@@ -120,6 +129,9 @@ class InstanceTest extends TestCase
         // https://www.php.net/manual/en/language.oop5.overloading.php
     }
 
+    /**
+     * test of app actions that override the default actions ( static members )
+     */
     public static function test_core_static_action()
     {
         $inst = new class() extends Instance {
@@ -219,7 +231,10 @@ class InstanceTest extends TestCase
         static::assertTrue($proxy(1) === 2);
         static::assertTrue($proxy . '' === 'hello');
     }
-
+    
+    /**
+     *  Test the members  actions of app that are assigned ( static members )
+     */
     public static function test_props_static_action()
     {
         $inst = new class() extends Instance {
@@ -265,6 +280,9 @@ class InstanceTest extends TestCase
 
     }
 
+    /**
+     * Test the default actions 
+     */
     public static function test_default_instance_action()
     {
         $inst = new class() extends Instance {
@@ -294,6 +312,9 @@ class InstanceTest extends TestCase
         }
     }
 
+    /**
+     * test of app actions that override the default actions 
+     */
     public static function test_core_instance_action()
     {
         $inst = new class() extends Instance {
@@ -392,7 +413,10 @@ class InstanceTest extends TestCase
         static::assertTrue($proxy(1) === 2);
         static::assertTrue($proxy . '' === 'hello');
     }
-
+c
+    /**
+     * Test the members  actions of app
+     */
     public static function test_props_instance_action()
     {
         $inst = new class() extends Instance {
@@ -436,6 +460,9 @@ class InstanceTest extends TestCase
         static::assertTrue($proxy->test('q') === 'q');
     }
 
+    /**
+     * Test the members  actions of app  for static members class
+     */
     public static function test_default_action_for_class()
     {
         $inst = new class() extends Instance {
