@@ -933,13 +933,13 @@ foreach($proxy as $key=>$value){
 
 ## Creating handler classes
 
-The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the ` Alpa \ ProxyObject \ Handlers \ IContract` interface.
+The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the ` Alpa \ ProxyObject \ Handlers \ ActionsInterface` interface.
 
 ```php
 <?php
-use Alpa\Tools\ProxyObject\Handlers\IContract;
+use Alpa\Tools\ProxyObject\Handlers\ActionsInterface;
 use Alpa\Tools\ProxyObject\Proxy;
-class MyHandlersClass implements  IContract
+class MyHandlersClass implements  ActionsInterface
 {
 	public function run(string $action, $target,?string $prop,$value_or_arguments,Proxy $proxy)
 	{
