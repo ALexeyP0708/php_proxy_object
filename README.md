@@ -1,7 +1,8 @@
 ## Dev work plan 
-- Изменить IContract на ActionsInterface
+
+
 ##Changes
-v.1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke)
+v1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke) - Warn: No backward compatibility
 
 
 ## Description
@@ -50,15 +51,6 @@ If you need the ability to work with protected / private members of an object / 
 Not the fact that the use of proxy objects will be fast.
 But in any case, this is the optimal solution for
 creating complex combinations and in a simple way.
-
-### Versions
-template: x.y.z   
-- x - version with major changes. Has no backward compatibility   
-- y - Versions with modifications t hat do not break backward compatibility   
-- z - Versions for adding new features, changing APIs, refactoring and fixing bugs.   
-Should not break backward compatibility with version "Y".  
-
-
 
 
 ## Install
