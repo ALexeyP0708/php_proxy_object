@@ -6,7 +6,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 use Alpa\Tools\ProxyObject\Proxy;
 
-abstract class StaticActions implements IContract
+abstract class StaticActions implements ActionsInterface
 {
     use TStaticMethods {
         get as protected;

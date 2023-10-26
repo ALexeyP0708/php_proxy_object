@@ -2,7 +2,7 @@
 
 namespace Alpa\Tools\ProxyObject;
 
-use Alpa\Tools\ProxyObject\Handlers\IContract;
+use Alpa\Tools\ProxyObject\Handlers\ActionsInterface;
 
 class Proxy implements \IteratorAggregate
 {
@@ -11,14 +11,14 @@ class Proxy implements \IteratorAggregate
      */
     protected  $target;
     /**
-     * @var IContract|string  if type string then Handlers class name
+     * @var ActionsInterface|string  if type string then Handlers class name
      */
     protected $handlers;
 
     /**
      * Proxy constructor.
      * @param object|string $target if type string then then this class name
-     * @param IContract|string $handlers if type string then Handlers class name
+     * @param ActionsInterface|string $handlers if type string then Handlers class name
      */
     public function __construct($target, $handlers)
     {
@@ -29,13 +29,13 @@ class Proxy implements \IteratorAggregate
         }
         
         if (
-            is_object($handlers) && $handlers instanceof IContract ||
-            is_string($handlers) && is_subclass_of($handlers, IContract::class)
+            is_object($handlers) && $handlers instanceof ActionsInterface ||
+            is_string($handlers) && is_subclass_of($handlers, ActionsInterface::class)
         ) {
             $this->handlers = $handlers;
         } else {
-            throw new \Exception('argument 2: the object must implement interface' . IContract::class .
-                ', or if class name, then the class must implement interface ' . IContract::class);
+            throw new \Exception('argument 2: the object must implement interface' . ActionsInterface::class .
+                ', or if class name, then the class must implement interface ' . ActionsInterface::class);
         }
     }
 

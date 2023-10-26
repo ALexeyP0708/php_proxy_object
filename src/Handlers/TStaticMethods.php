@@ -46,7 +46,7 @@ trait TStaticMethods
     /**
      * generates a proxy object
      * @param object|string $target
-     * @param IContract|string|null $handlers
+     * @param ActionsInterface|string|null $handlers
      * @param string|null $proxyClass
      * @return Proxy
      * @throws \Exception

@@ -6,7 +6,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 use Alpa\Tools\ProxyObject\Proxy;
 
-class Closures implements IContract
+class Closures implements ActionsInterface
 {
     protected array $properties = [
         'get' => [],

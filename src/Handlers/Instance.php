@@ -3,7 +3,7 @@
 
 namespace Alpa\Tools\ProxyObject\Handlers;
 
-abstract class Instance implements IContract
+abstract class Instance implements ActionsInterface
 {
     use TInstanceMethods, TStaticMethods {
         TInstanceMethods::get insteadof TStaticMethods;

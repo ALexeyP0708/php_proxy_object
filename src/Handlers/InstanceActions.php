@@ -6,7 +6,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 use Alpa\Tools\ProxyObject\Proxy;
 
-abstract class InstanceActions implements IContract
+abstract class InstanceActions implements ActionsInterface
 {
     use TInstanceMethods {
         TInstanceMethods::get as protected;

@@ -5,7 +5,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 use Alpa\Tools\ProxyObject\Proxy;
 
-interface IContract
+interface ActionsInterface
 {
     /**
      * @param string $action
