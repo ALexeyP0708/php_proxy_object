@@ -413,7 +413,7 @@ class InstanceTest extends TestCase
         static::assertTrue($proxy(1) === 2);
         static::assertTrue($proxy . '' === 'hello');
     }
-c
+
     /**
      * Test the members  actions of app
      */
