@@ -49,11 +49,12 @@ class Proxy implements \IteratorAggregate
     {
         self::refNoticeErrorHandler();
         if (is_string($this->handlers)) {
-            return $this->handlers::static_run($action, $this->target, $prop, $value_or_arguments, $this);
+            $answer= & $this->handlers::static_run($action, $this->target, $prop, $value_or_arguments, $this);
         } else {
-            return $this->handlers->run($action, $this->target, $prop, $value_or_arguments, $this);
+            $answer = & $this->handlers->run($action, $this->target, $prop, $value_or_arguments, $this);
         }
         restore_error_handler();
+        return $answer;
     }
     // __get must return by reference
     public function &__get(string $name)
