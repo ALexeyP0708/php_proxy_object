@@ -2,8 +2,8 @@
 
 
 ## Changes
-v1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke) - Warn: No backward compatibility
-
+- v1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke) - Warn: No backward compatibility
+- v1.0.13 Added check for property initialization before passing by reference-  compatible with prev version
 
 ## Description
 A proxy object is an object that implements all the available magic methods
