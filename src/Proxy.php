@@ -104,17 +104,24 @@ class Proxy implements \IteratorAggregate
         }
         return new \ArrayIterator([]);
     }
-    private  static function refNoticeErrorHandler(bool $prev_restore = false)
+    private  static function refNoticeErrorHandler()
     {
         $prev_handler_error = null;
-        $prev_handler_error = set_error_handler(function (...$args) use (&$prev_handler_error, $prev_restore) {
-            if ($args[0] == 8) {
-                if ($prev_restore) {
-                    restore_error_handler();
-                }
+        $prev_handler_error = set_error_handler(function (...$args) use (&$prev_handler_error) {
+
+            if (in_array($args[1],[
+                'Only variables should be assigned by reference',
+                'Only variable references should be returned by reference'
+            ])) {
                 return true;
             }
-            return $prev_handler_error($args);
-        }, E_NOTICE);
+            if(!is_null($prev_handler_error)){
+                $answer=$prev_handler_error(...$args);
+                if(is_bool($answer)){
+                    return $answer;
+                }
+            }
+            return false;
+        }, E_NOTICE|E_WARNING);
     }
 }

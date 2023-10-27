@@ -69,30 +69,36 @@ trait TStaticMethods
      */
     public static function &get($target, string $prop, $value_or_args, Proxy $proxy)
     {
-        // This check is required, since when the result is returned by reference, the property is dynamically created if it does not exist.
-        // In PHP 8.2 this behavior is deprecated
-        // start check error
-        $answer=null;
-        $before_error_handler=null;
-        $check=false;
-        $before_error_handler=set_error_handler(function(...$args)use(&$before_error_handler,&$check){
-            
-            if(substr($args[1],0,18)==='Undefined property') {
-                $check = true;
+        // This check is required, since when the result is returned by reference,
+        // the property is dynamically created if it does not exist.      In PHP 8.2 this behavior is deprecated
+        // Also in PHP, assigning a property by reference initializes it (this also applies to deleted properties). https://www.php.net/manual/en/language.references.whatdo.php
+        
+       // start check error
+        $error_msg='';
+        $error_code=0;
+        $handler=set_error_handler(function (...$args) use (&$error_msg,&$error_code) {
+            if(substr($args[1],0,19)==='Undefined property:'){
+                $bt=debug_backtrace()[3];
+                $error_msg=$args[1].' in '.$bt['file'] .' on line '. $bt['line']."\n";
+                $error_code=$args[0];
+                return true;
             }
-            return !is_null($before_error_handler) ? $before_error_handler(...$args):false;
+            return false;
         },E_NOTICE|E_WARNING);
         if(is_string($target)){
-            $target::$$prop;
+            $res=$target::$$prop;
         } else {
-            $target->$prop;
+            $res=$target->$prop;
         }
         restore_error_handler();
-        if($check){
-            return $answer;
-        }
-        // end check error
-        if (is_string($target)) {
+        //For some reason, the restored handler does not run when trigger_error
+        if($error_code>0) {
+            if($handler!==null){set_error_handler($handler);} // forcefully restore an error handler
+            trigger_error($error_msg,$error_code===E_NOTICE?E_USER_NOTICE:E_USER_WARNING);
+            if($handler!==null){restore_error_handler();}
+            return $res;
+        } 
+        if(is_string($target)){
             return $target::$$prop;
         }
         return $target->$prop;

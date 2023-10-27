@@ -34,7 +34,7 @@ class ClosuresTest extends TestCase
                         }
                     }
                     return false;
-                }, E_NOTICE);
+                }, E_NOTICE|E_WARNING);
             }
             public static function restoreErrorHandler()
             {
@@ -202,13 +202,13 @@ class ClosuresTest extends TestCase
             return 101;
         };
         $check=false;
-        set_error_handler(function(...$args)use (&$check){
+        set_error_handler(function(...$args) use (&$check){
               if(substr($args[1],0,18)==='Undefined property'){
                   $check=true;
                   return true;
               } 
               return false;
-        },E_WARNING|E_NOTICE);
+        },E_USER_WARNING|E_USER_NOTICE);
         $instance->runGet($testTarget, 'prop', $emptyProxy);
         restore_error_handler();
         $this->assertTrue($check,'Test for generating an error when a property is missing');
