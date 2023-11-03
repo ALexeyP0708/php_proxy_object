@@ -5,6 +5,7 @@ namespace Alpa\Tools\ProxyObject\Handlers;
 
 
 use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\ProxyAbstract;
 
 trait TStaticMethods
 {
@@ -44,6 +45,7 @@ trait TStaticMethods
     }
 
     /**
+     * @deprecated
      * generates a proxy object
      * @param object|string $target
      * @param ActionsInterface|string|null $handlers
@@ -51,7 +53,7 @@ trait TStaticMethods
      * @return Proxy
      * @throws \Exception
      */
-    public static function proxy($target, $handlers = null, ?string $proxyClass = null): Proxy
+    public static function proxy($target, $handlers = null, ?string $proxyClass = null): ProxyAbstract
     {
         $handlers = $handlers !== null ? $handlers : static::class;
         $proxyClass = $proxyClass ?? $handlers::$proxyClass ?? Proxy::class;

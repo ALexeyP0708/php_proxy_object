@@ -32,6 +32,7 @@ trait TInstanceMethods
     }
 
     /**
+     * @deprecated 
      * @param object|string $target observable object/class
      * @param string|null $proxyClass
      * @return Proxy
