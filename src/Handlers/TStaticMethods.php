@@ -32,7 +32,12 @@ trait TStaticMethods
         if ($methodProp !== null && method_exists(static::class, $methodProp)) {
             $method = $methodProp;
         }
-        return static::{$method}($target, $prop, $value_or_args, $proxy);
+        if(in_array($method,[static::getActionPrefix().'get',static::getActionPrefix().'call',static::getActionPrefix().'invoke'])){
+            $answer = & static::{$method}($target, $prop, $value_or_args, $proxy);
+        } else {
+            $answer =  static::{$method}($target, $prop, $value_or_args, $proxy);
+        }
+        return $answer;
     }
 
     /**
@@ -171,12 +176,25 @@ trait TStaticMethods
      * @param ProxyInterface $proxy the proxy object from which the method is called
      * @return mixed
      */
-    public static function & call($target, string $prop, array $value_or_args, ProxyInterface $proxy)
+    public static function & call($target, string $method, array $value_or_args, ProxyInterface $proxy)
     {
-        if (is_string($target)) {
-            return $target::{$prop}(...$value_or_args);
+
+
+        if((new \ReflectionMethod($target,$method))->returnsReference()){
+            if(is_string($target)){
+                $answer=& $target::{$method}(...$value_or_args);
+            } else {
+                $answer=& $target->$method(...$value_or_args);
+            }
+        } else {
+            if(is_string($target)){
+                $answer = $target::{$method}(...$value_or_args);
+            } else {
+                $answer = $target->$method(...$value_or_args);
+            }            
         }
-        return $target->$prop(...$value_or_args);
+
+        return $answer;
     }
 
     /**

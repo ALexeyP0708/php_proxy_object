@@ -51,29 +51,34 @@ class Closures implements ActionsInterface
      */
     public function & run(string $action, $target, ?string $prop, $value_or_arguments, ProxyInterface $proxy)
     {
+        $answer=null;
         switch ($action) {
             case 'get':
-                return $this->runGet($target, $prop, $proxy);
+                $answer= & $this->runGet($target, $prop, $proxy);
+                break;
             case 'set':
                 $this->runSet($target, $prop, $value_or_arguments, $proxy);
                 break;
             case 'isset':
                 $answer = $this->runIsset($target, $prop, $proxy);
-                return $answer;
+                break;
             case 'unset':
                 $this->runUnset($target, $prop, $proxy);
                 break;
             case 'call':
-                return $this->runCall($target, $prop, $value_or_arguments, $proxy);
+                $answer = & $this->runCall($target, $prop, $value_or_arguments, $proxy);
+                break;
             case 'invoke':
-                return $this->runInvoke($target, $value_or_arguments, $proxy);
+                $answer = &  $this->runInvoke($target, $value_or_arguments, $proxy);
+                break;
             case 'toString':
                 $answer = $this->runToString($target, $proxy);
-                return $answer;
+                break;
             case 'iterator':
                 $answer = $this->runIterator($target, $proxy);
-                return $answer;
+                break;
         }
+        return $answer;
     }
 
     /**
@@ -127,11 +132,13 @@ class Closures implements ActionsInterface
     {
         $action = 'get';
         if (array_key_exists($prop, $this->properties[$action])) {
-            return $this->properties[$action][$prop]($target, $prop, $proxy);
+            $answer=& $this->properties[$action][$prop]($target, $prop, $proxy);
         } else if ($this->$action !== null) {
-            return ($this->$action)($target, $prop, $proxy);
+            $answer=& ($this->$action)($target, $prop, $proxy);
+        } else {
+            $answer=& TStaticMethods::static_run($action, $target, $prop, null, $proxy);
         }
-        return TStaticMethods::static_run($action, $target, $prop, null, $proxy);
+        return $answer;
     }
 
     /**
@@ -209,11 +216,13 @@ class Closures implements ActionsInterface
     {
         $action = 'call';
         if (array_key_exists($prop, $this->properties[$action])) {
-            return  $this->properties[$action][$prop]($target, $prop, $arguments, $proxy);;
+            $answer =& $this->properties[$action][$prop]($target, $prop, $arguments, $proxy);;
         } else if ($this->$action !== null) {
-            return ($this->$action)($target, $prop, $arguments, $proxy);
+            $answer =& ($this->$action)($target, $prop, $arguments, $proxy);
+        } else {
+            $answer =& TStaticMethods::static_run($action, $target, $prop, $arguments, $proxy); 
         }
-        return TStaticMethods::static_run($action, $target, $prop, $arguments, $proxy);
+        return $answer;
     }
 
     /**
@@ -229,9 +238,11 @@ class Closures implements ActionsInterface
     {
         $action = 'invoke';
         if ($this->$action !== null) {
-            return ($this->$action)($target, $arguments, $proxy);
+            $answer= & ($this->$action)($target, $arguments, $proxy);
+        } else {
+            $answer=& TStaticMethods::static_run($action, $target, null, $arguments, $proxy);
         }
-        return TStaticMethods::static_run($action, $target, null, $arguments, $proxy);
+        return $answer;
     }
 
     /**

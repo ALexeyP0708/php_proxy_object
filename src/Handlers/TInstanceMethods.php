@@ -28,7 +28,13 @@ trait TInstanceMethods
         if ($methodProp !== null && method_exists(static::class, $methodProp)) {
             $method = $methodProp;
         }
-        return $this->$method($target, $prop, $value_or_args, $proxy);
+        
+        if((new \ReflectionMethod($this,$method))->returnsReference()){
+            $answer=& $this->$method($target, $prop, $value_or_args, $proxy);
+        } else {
+            $answer = $this->$method($target, $prop, $value_or_args, $proxy);
+        }
+        return $answer;
     }
 
     /**

@@ -19,7 +19,7 @@ class ExamplesTest extends TestCase
         parent::setUpBeforeClass();
 
         $handlers = new Closures([
-            'get' => function ($target, $name, ProxyInterface $proxy) {
+            'get' => function & ($target, $name, ProxyInterface $proxy) {
                 $name = '_' . $name;
                 return $target->$name;
             },
@@ -114,12 +114,14 @@ class ExamplesTest extends TestCase
         $inst = new class () extends Instance {
             protected static function &static_get( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
-                return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
+                $answer=is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
+                return $answer;
             }
 
-            protected static function static_get_test( $target, string $prop, $val_or_args, ProxyInterface $proxy)
+            protected static function & static_get_test( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
-                return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;
+                $answer = is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;
+                return $answer;
             }
         };
         $obj = (object)[
@@ -141,7 +143,8 @@ class ExamplesTest extends TestCase
 
             protected function &get( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
-                return is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
+                $answer=is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
+                return $answer;
             }
 
             protected function get_test( $target, string $prop, $val_or_args, ProxyInterface $proxy)

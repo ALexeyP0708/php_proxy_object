@@ -17,33 +17,6 @@ class ClosuresTest extends TestCase
         parent::setUpBeforeClass();
 
         $wrapInstance = new class() extends Closures {
-            public static bool $isDisabledRefErrorHandler=false;
-            public static function refNoticeErrorHandler ()
-            {
-                if(self::$isDisabledRefErrorHandler){
-                    return;
-                }
-                $prev_handler_error = null;
-                $prev_handler_error = set_error_handler(function (...$args) use (&$prev_handler_error) {
-                    if ($args[1] === 'Only variable references should be returned by reference') {
-                        return true;
-                    }
-                    if(!is_null($prev_handler_error)){
-                        $answer=$prev_handler_error(...$args);
-                        if(is_bool($answer)){
-                            return $answer;
-                        }
-                    }
-                    return false;
-                }, E_NOTICE|E_WARNING);
-            }
-            public static function restoreErrorHandler()
-            {
-                if(self::$isDisabledRefErrorHandler){
-                    return;
-                }
-                restore_error_handler();
-            }
             public array $properties = [
                 'get' => [],
                 'set' => [],
@@ -61,54 +34,41 @@ class ClosuresTest extends TestCase
 
             public function &runGet($target, string $prop, ProxyInterface $proxy)
             {
-                self::refNoticeErrorHandler();
                 $answer= & parent::runGet($target, $prop, $proxy);
-                self::restoreErrorHandler();
                 return $answer;
             }
 
             public function runSet($target, string $prop, $value, ProxyInterface $proxy): void
             {
-                self::refNoticeErrorHandler();
                 parent::runSet($target, $prop, $value, $proxy);
-                self::restoreErrorHandler();
             }
 
             public function runIsset($target, string $prop, ProxyInterface $proxy): bool
             {
-                self::refNoticeErrorHandler();
                 $answer = parent::runIsset($target, $prop, $proxy);
-                self::restoreErrorHandler();
                 return $answer;
             }
 
             public function runUnset($target, string $prop, ProxyInterface $proxy): void
             {
-                self::refNoticeErrorHandler();
                 parent::runUnset($target, $prop, $proxy);
-                self::restoreErrorHandler();
             }
 
             public function & runCall($target, string $prop, array $arguments, ProxyInterface $proxy)
             {
-                self::refNoticeErrorHandler();
                 $answer = & parent::runCall($target, $prop, $arguments, $proxy);
-                self::restoreErrorHandler();
                 return $answer;
             }
 
             public function & runInvoke($target, array $arguments, ProxyInterface $proxy)
             {
-                self::refNoticeErrorHandler();
                 $answer = & parent::runInvoke($target, $arguments, $proxy);
-                self::restoreErrorHandler();
                 return $answer;
             }
 
             public function runToString($target, ProxyInterface $proxy): string
             {
                 $answer = parent::runToString($target, $proxy);
-                self::restoreErrorHandler();
                 return $answer;
             }
 
@@ -194,13 +154,15 @@ class ClosuresTest extends TestCase
         $testTarget = (object)[
 
         ];
-        $handler = function ($target, $name) use ($tester, $testTarget) {
+        $handler = function & ($target, $name) use ($tester, $testTarget) {
             $tester->assertTrue($testTarget === $target && $name === 'prop2');
-            return 100;
+            $answer=100;
+            return $answer;
         };
-        $handlerProp = function ($target, $name) use ($tester, $testTarget) {
+        $handlerProp = function & ($target, $name) use ($tester, $testTarget) {
             $tester->assertTrue($testTarget === $target && $name === 'prop');
-            return 101;
+            $answer=101;
+            return $answer;
         };
         $check=false;
         set_error_handler(function(...$args) use (&$check){
@@ -248,13 +210,15 @@ class ClosuresTest extends TestCase
         $handlers = new $HandlerClass();
         $self = $this;
         static::assertTrue($handlers->runGet($class, 'prop', $emptyProxy) === 100 && $handlers->runGet($class, 'prop2', $emptyProxy) === 101);
-        $handler = function ($target, $name, $value) use ($self, $class) {
+        $handler = function & ($target, $name, $value) use ($self, $class) {
             $self->assertTrue($class === $target);
-            return $target::$$name + 1;
+            $answer=$target::$$name + 1;
+            return $answer;
         };
-        $handlerProp = function ($target, $name, $value) use ($self, $class) {
+        $handlerProp = function & ($target, $name, $value) use ($self, $class) {
             $self->assertTrue($class === $target);
-            return $target::$$name + 2;
+            $answer=$target::$$name + 2;
+            return $answer;
         };
         $handlers->init('get', $handler);
         static::assertTrue($handlers->runGet($class, 'prop', $emptyProxy) === 101 && $handlers->runGet($class, 'prop2', $emptyProxy) === 102);
@@ -451,13 +415,15 @@ class ClosuresTest extends TestCase
         } catch (\Throwable $e) {
             static:: assertTrue(true);
         }
-        $handler = function ($target, $name, $args) use ($self, $testTarget) {
+        $handler = function & ($target, $name, $args) use ($self, $testTarget) {
             $self->assertTrue($testTarget === $target && $name === 'prop2' && $args[0] === 'test');
-            return 'hello';
+            $answer='hello';
+            return $answer;
         };
-        $handlerProp = function ($target, $name, $args) use ($self, $testTarget) {
+        $handlerProp = function & ($target, $name, $args) use ($self, $testTarget) {
             $self->assertTrue($testTarget === $target && $name === 'prop' && $args[0] === 'test');
-            return 'bay';
+            $answer='bay';
+            return $answer;
         };
         $instance->init('call', $handler);
         $instance->initProp('call', 'prop', $handlerProp);
@@ -490,11 +456,13 @@ class ClosuresTest extends TestCase
             static:: assertTrue(true);
         }
         static:: assertTrue($handlers->runCall($class, 'method', [], $emptyProxy) === 102);
-        $handler = function ($target, $name, $args) {
-            return 'hello';
+        $handler = function & ($target, $name, $args) {
+            $answer='hello';
+            return $answer;
         };
-        $handlerProp = function ($target, $name, $args) {
-            return 'bay';
+        $handlerProp = function & ($target, $name, $args) {
+            $answer='bay';
+            return $answer;
         };
         $handlers->init('call', $handler);
         static:: assertTrue(
@@ -556,8 +524,9 @@ class ClosuresTest extends TestCase
         $HandlerClass = self::$fixtures['wrap_data']['class'];
         $handlers = new $HandlerClass();
         $self = $this;
-        $handler = function ($target, $args) {
-            return $args[0] + 1;
+        $handler = function & ($target, $args) {
+            $answer=$args[0] + 1;
+            return $answer;
         };
         $instance->init('invoke', $handler);
         static::assertTrue($instance->runInvoke((object)[], [1], $emptyProxy) === 2);
@@ -572,8 +541,9 @@ class ClosuresTest extends TestCase
         $HandlerClass = self::$fixtures['wrap_data']['class'];
         $handlers = new $HandlerClass();
         $self = $this;
-        $handler = function ($target, $args) {
-            return $args[0] + 1;
+        $handler = function & ($target, $args) {
+            $answer=$args[0] + 1;
+            return $answer;
         };
         $instance->init('invoke', $handler);
         static::assertTrue($instance->runInvoke(get_class(new class () {

@@ -1,62 +1,61 @@
-## Dev work plan 
-
-
+## Dev work plan
+## install
+`composer require alpa/tools_proxy_object:1.0.14`
 ## Changes
-- v1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke) - Warn: No backward compatibility
-- v1.0.13 Added check for property initialization before passing by reference-  compatible with prev version
+
+-   v1.0.12 Added the ability to return the result by reference (For actions: get,call,invoke) - Warn: No backward compatibility
+-   v1.0.13 Added check for property initialization before passing by reference- compatible with prev version
+-   v1.0.14 Bugs fixed  error :Only variable references should be retuned (or  assigned) by reference . - Warn: No backward compatibility .
+    Closures for  get action, call action, invoke action  now needs to be declared by reference ( `function & (){}` ), 
+    and the result returned via a variable. There is now an abstract class for creating new proxies. 
+    Interfaces were created for the purpose of dependency inversion.
 
 ## Description
-A proxy object is an object that implements all the available magic methods
-that run the corresponding handlers. These handlers perform a number of custom
-actions on the target object.  
-Basically, this behavior is necessary for processing the result when accessing 
-properties or methods of the target object.  
-In simple words:  
-- before getting / writing the value of the property of the target object, it must be processed in the sandbox.
-- before executing the target object method, it needs to be processed in the sandbox.
+
+A proxy object is an object that implements all the available magic methods  that run the corresponding handlers.  These handlers perform a number of custom  actions on the target object.  
+Basically,  this behavior is necessary for processing the result when accessing  properties or methods of the target object.  
+In simple words:
+
+-   before getting / writing the value of the property of the target object, it must be processed in the sandbox.
+-   before executing the target object method, it needs to be processed in the sandbox.
 
 The component creates a proxy object for the observed object or class.  
-Action handlers (get | set | call | isset | unset | invoke | toString | iterator) are assigned for each member of the observable object or class .   
-A similar principle is implemented in javascript through the Proxy constructor.   
-When accessing a member of an object, through the proxy object, the assigned handler for the specific action will be invoked.
+Action handlers  (get  |  set  |  call  |  isset  |  unset  |  invoke  |  toString  |  iterator)  are assigned for each member of the observable object or class  .  
+A similar principle is implemented in javascript through the Proxy constructor.  
+When accessing a member of an object,  through the proxy object,  the assigned handler for the specific action will be invoked.
 
 Where the component can be applied:
-- mediator for data validation;
-- access to private data of an object through reflection;
-- dynamic data formation, and generation of other properties;
-- dynamic data requests, for example from a database;
-- other options.
+
+-   mediator for data validation;
+-   access to private data of an object through reflection;
+-   dynamic data formation, and generation of other properties;
+-   dynamic data requests, for example from a database;
+-   other options.
 
 ## Note
+
 ### 1
-From version 1.0.0 to version 1.1.0 is experimental development, where the API will be subject to modification.  
+
+From version 1.0.0 to version 1.1.0 is experimental development,  where the API will be subject to modification.  
 See the tag description on GitHub for version compatibility.  
-When including a component in a project, specify a specific version.  
-The description of the api for a specific version can be found in the commit version.  
+When including a component in a project,  specify a specific version.  
+The description of the api for a specific version can be found in the commit version.
 
-### 2 
+### 2
 
-If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
-See - [Creating handler classes](#creating-handler-classes)
+If for some reason you have bugs or other problems,  then it is recommended to implement your own handlers classes that fix this problem.  See  -  [Creating handler classes](#creating-handler-classes)
 
 ### 3
 
-The proxy object is a wrapper object that implements magic methods.
-By default it is not possible to access protected / private members of an observable object / class.
-The default proxy only works with the public members of the observable / class.
-If you need the ability to work with protected / private members of an object / class, use Reflector classes in action handlers.
+The proxy object is a wrapper object that implements magic methods.  By default it is not possible to access protected  /  private members of an observable object  /  class.  The default proxy only works with the public members of the observable  /  class.  If you need the ability to work with protected  /  private members of an object  /  class,  use Reflector classes in action handlers.
 
 ### 4
 
-Not the fact that the use of proxy objects will be fast.
-But in any case, this is the optimal solution for
-creating complex combinations and in a simple way.
-
+Not the fact that the use of proxy objects will be fast.  But in any case,  this is the optimal solution for  creating complex combinations and in a simple way.
 
 ## Install
 
-`composer require alpa/tools_proxy_object` 
-
+`composer require alpa/tools_proxy_object`
 
 ## Getting started
 
@@ -68,13 +67,16 @@ use Alpa\Tools\ProxyObject\ProxyInterface;
 use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance 
 {
-    protected static function static_get( $target,string $prop,$val_or_args,ProxyInterface $proxy)
+    protected static function & static_get  ( $target,string $prop,$val_or_args,ProxyInterface $proxy)
     {
-        return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;        
+	    $answer=is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop; 
+        return $answer;  //Only variables are returned by reference     
     }
+    
     protected static function & static_get_test( $target,string $prop,$val_or_args,ProxyInterface $proxy)
     {
-        return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;        
+	    $answer =  is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;   
+        return $answer ;   //Only variables are returned by reference     
     }
 }
 $obj=(object)[
@@ -85,6 +87,7 @@ $proxy=new Proxy($obj,MyHandlers::class);
 
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
+
 ```
 
 example 2:
@@ -102,11 +105,13 @@ class MyHandlers extends Handlers\Instance
     }
     protected function  & get( $target,string $prop,$val_or_args,ProxyInterface $proxy)
     {
-        return is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;        
+	    $answer = is_string($target->$prop) ? strtoupper($this->prefix.$target->$prop) : $target->$prop;        
+        return $answer;  //Only variables are returned by reference 
     }
-    protected function get_test( $target,string $prop,$val_or_args,ProxyInterface $proxy)
+    protected function & get_test($target,string $prop,$val_or_args,ProxyInterface $proxy)
     {
-        return is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;        
+	     $answer = is_string($target->$prop) ? strtolower($this->prefix.$target->$prop) : $target->$prop;        
+        return  $answer;  //Only variables are returned by reference 
     }
 }
 $inst=new MyHandlers('Alex ');
@@ -120,6 +125,7 @@ $proxy=new Proxy($obj,$inst);
 echo $proxy->test; // alex hello
 echo $proxy->other;// ALEX BAY
 
+
 ```
 
 example 3:
@@ -130,11 +136,13 @@ use Alpa\Tools\ProxyObject\Proxy;
 use Alpa\Tools\ProxyObject\ProxyInterface;
 use Alpa\Tools\ProxyObject\Handlers;
 $handlers = new Handlers\Closures();
-$handlers->init('get',function($target,$prop,ProxyInterface $proxy){
-	return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;      
+$handlers->init('get',function & ($target,$prop,ProxyInterface $proxy){
+	$answer= is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop; 
+	return $answer;  //Only variables are returned by reference 
 });
-$handlers->initProp('get','test',function($target,$prop, ProxyInterface $proxy){
-	return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;       
+$handlers->initProp('get','test',function & ($target,$prop, ProxyInterface $proxy){
+	$answer = is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;  
+	return $answer;     //Only variables are returned by reference  
 });
 $obj=(object)[
     'test'=>'HELLO',
@@ -143,9 +151,10 @@ $obj=(object)[
 $proxy=new Proxy($obj,$handlers); 
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
+
 ```
 
-example 4 - 
+example 4  -
 
 ```php
 <?php
@@ -153,7 +162,7 @@ use \Alpa\Tools\ProxyObject\Proxy;
 use \Alpa\Tools\ProxyObject\ProxyInterface;
 use \Alpa\Tools\ProxyObject\Handlers;
 $handlers = new Handlers([
-    'get' => function ($target, $name, ProxyInterface $proxy) {
+    'get' => function & ($target, $name, ProxyInterface $proxy) {
         $name = '_' . $name;
         return $target->$name;
     },
@@ -232,41 +241,43 @@ foreach($proxy as $key=>$value){
 unset($proxy->test); // unset($target->_test) 
 echo key_exists($target,'_test'); // return false;
 
+
 ```
 
 ## Definitions
+
 Definitions:
-- member(s) - properties and methods of an object or class
-- action (s) -Actions that can be applied to members of a class or object(`set|get|isset|unset|call`).
-  As well  actions that are applied to a object or class  (`invoke | toString |iterator`).
-  Sometimes the definition of "action" is understood as an action handler.
-- handler(s) or action(s) handlers  - A function or method that handles actions
-- proxy - an object with declared magic methods, which will pass actions through itself to the members of the observable object or class.
-  The proxy object is a wrapper object that implements magic methods.The default proxy only works with the public members of the observable / class.
+
+-   member(s) - properties and methods of an object or class
+-   action (s) -Actions that can be applied to members of a class or object(`set|get|isset|unset|call`). As well actions that are applied to a object or class (`invoke | toString |iterator`). Sometimes the definition of "action" is understood as an action handler.
+-   handler(s) or action(s) handlers - A function or method that handles actions
+-   proxy - an object with declared magic methods, which will pass actions through itself to the members of the observable object or class. The proxy object is a wrapper object that implements magic methods.The default proxy only works with the public members of the observable / class.
 
 ## Create handlers for Proxy object
 
 There are two ways to write handlers:
-- dynamic writing of handlers through closure functions.
-- writing of handlers through class declaration.
+
+-   dynamic writing of handlers through closure functions.
+-   writing of handlers through class declaration.
 
 There are two types of handlers:
-- a handler for a specific member of an object;
-- handler for all members of the object;
 
-If action handler is no assigned to a member, then an action handler for all members is applied.   
-If  action handler is no assigned to members, then standard actions will be applied.
+-   a handler for a specific member of an object;
+-   handler for all members of the object;
+
+If action handler is no assigned to a member,  then an action handler for all members is applied.  
+If action handler is no assigned to members,  then standard actions will be applied.
 
 The following actions exist when accessing the members of an object:
-- set - member value entry;
-- get - member value query;
-- isset - member check  ;
-- unset - member delete;
-- call - member call;
-- invoke - invoke object or class;
-- toString - converting object or class to string;
-- iterator - assigning an iterator when iterating over the members of an object.
 
+-   set - member value entry;
+-   get - member value query;
+-   isset - member check ;
+-   unset - member delete;
+-   call - member call;
+-   invoke - invoke object or class;
+-   toString - converting object or class to string;
+-   iterator - assigning an iterator when iterating over the members of an object.
 
 ### Dynamic writing of handlers through closure functions
 
@@ -276,7 +287,7 @@ Example in the constructor
 <?php
 $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([
     // handler for members query
-    'get'=>function($target,$prop,$proxy){},
+    'get'=>function &($target,$prop,$proxy){},
     // handler for  members entry
     'set'=>function($target,$prop,$value,$proxy):void{},
     // handler for entry members
@@ -284,31 +295,33 @@ $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([
     //  handler to check if members exist
     'isset'=>function($target,$prop,$proxy):bool{},
     //  handler to call members
-    'call'=>function($target,$prop,$args,$proxy){},
+    'call'=>function & ($target,$prop,$args,$proxy){},
     // handler for invoke object or class 
-    'invoke'=>function($target,array $args,$proxy){},
+    'invoke'=>function & ($target,array $args,$proxy){},
     // handler for toString object or class 
     'toString'=>function($target,$proxy):string {},
     // handler for delete members
     'iterator'=>function($target,$prop,$proxy):\Traversable{},
 ]);
+
 ```
 
 Handlers can be assigned outside of the constructor.  
-An example of assigning handlers via the Handlers :: init method
+An example of assigning handlers via the Handlers  ::  init method
 
 ```php
 <?php
 
 $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures();
-$handlers->init('get',function($target,$name,$proxy){});
+$handlers->init('get',function & ($target,$name,$proxy){});
 $handlers->init('set',function($target,$name,$value,$proxy):void{});
 $handlers->init('unset',function($target,$prop,$proxy):void{});
 $handlers->init('isset',function($target,$prop,$proxy):bool{});
-$handlers->init('call',function($target,$prop, $args,$proxy){});
-$handlers->init('invoke',function($target,$args,$proxy){});
+$handlers->init('call',function & ($target,$prop, $args,$proxy){});
+$handlers->init('invoke',function & ($target,$args,$proxy){});
 $handlers->init('toString',function($target,$proxy){});
 $handlers->init('iterator',function($target,$prop,$proxy):\Traversable{});
+
 ```
 
 An example of assigning handlers for a specific property
@@ -317,7 +330,7 @@ An example of assigning handlers for a specific property
 <?php
 $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([],[
     'get'=>[
-        'prop'=>function ($target,$name,$proxy):mixed{}
+        'prop'=>function & ($target,$name,$proxy):mixed{}
     ],
     'set'=>[
         'prop'=>function ($target,$name,$value,$proxy):void{}  
@@ -329,9 +342,10 @@ $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures([],[
          'prop'=>function ($target,$name,$proxy):bool{}  
     ],
     'call'=>[
-         'prop'=>function ($target,$name,$args,$proxy){}  
+         'prop'=>function & ($target,$name,$args,$proxy){}  
     ]     
 ]);
+
 ```
 
 or
@@ -339,13 +353,13 @@ or
 ```php
 <?php
 $handlers=new \Alpa\Tools\ProxyObject\Handlers\Closures();
-$handlers->initProp('get','prop',function ($target,$name,$proxy):mixed{});
+$handlers->initProp('get','prop',function & ($target,$name,$proxy):mixed{});
 $handlers->initProp('set','prop',function ($target,$name,$value,$proxy):void{});
 $handlers->initProp('unset','prop',function ($target,$name,$proxy):void{});
 $handlers->initProp('isset','prop',function ($target,$name,$proxy):bool{});
-$handlers->initProp('call','prop',function ($target,$name,$args,$proxy){});
-```
+$handlers->initProp('call','prop',function & ($target,$name,$args,$proxy){});
 
+```
 
 ### Static writing of handlers through class declaration.
 
@@ -359,9 +373,10 @@ class MyHandlers extends Instance
 {
     
 };
+
 ```
 
-or 
+or
 
 ```php
 <?php
@@ -371,6 +386,7 @@ class MyHandlers extends StaticActions
 {
     
 };
+
 ```
 
 or
@@ -383,47 +399,45 @@ class MyHandlers extends InstanceActions
 {
     
 };
+
 ```
-You can declare the following instance methods as handlers
-(when inheriting classes `Alpa\ProxyObject\Handlers\StaticActions` 
-or `Alpa\ProxyObject\Handlers\InstanceActions`
-or `Alpa\ProxyObject\Handlers\Instance`)
-:
-- get - member value query;
-- get_{$name_property} - value query of a member named $name_property;
-- set - member value entry;
-- set_{$name_property} - value entry of a member named $name_property;
-- isset - checking is set member;
-- isset_{$name_property} - checking is set a member named $name_property;
-- unset - delete a member;
-- unset_{$name_property} - removing a member named $name_property;
-- call - call member;
-- call_{$name_property} - call a member named $name_property;
-- invoke - invoke object or class;
-- toString - converting object or class to string; 
-- iterator - assigning an iterator to foreach;
 
+You can declare the following instance methods as handlers  (when inheriting classes  `Alpa\ProxyObject\Handlers\StaticActions`  or  `Alpa\ProxyObject\Handlers\InstanceActions`  or  `Alpa\ProxyObject\Handlers\Instance`) :
 
-You can declare the following static methods as handlers :
-(when inheriting class  `Alpa\ProxyObject\Handlers\Instance`)
-- static_get - member value query;
-- static_get_{$name_property} - value query of a member named $name_property;
-- static_set - member value entry;
-- static_set_{$name_property} - value entry of a member named $name_property;
-- static_isset - checking is set member;
-- static_isset_{$name_property} - checking is set a member named $name_property;
-- static_unset - delete a member;
-- static_unset_{$name_property} - removing a member named $name_property;
-- static_call - call member;
-- static_call_{$name_property} - call a member named $name_property;
-- static_invoke - invoke object or class;
-- static_toString - converting object or class to string;
-- static_iterator - assigning an iterator to foreach;
+-   get - member value query;
+-   get_{$name_property} - value query of a member named $name_property;
+-   set - member value entry;
+-   set_{$name_property} - value entry of a member named $name_property;
+-   isset - checking is set member;
+-   isset_{$name_property} - checking is set a member named $name_property;
+-   unset - delete a member;
+-   unset_{$name_property} - removing a member named $name_property;
+-   call - call member;
+-   call_{$name_property} - call a member named $name_property;
+-   invoke - invoke object or class;
+-   toString - converting object or class to string;
+-   iterator - assigning an iterator to foreach;
 
+You can declare the following static methods as handlers  : (when inheriting class  `Alpa\ProxyObject\Handlers\Instance`)
+
+-   static_get - member value query;
+-   static_get_{$name_property} - value query of a member named $name_property;
+-   static_set - member value entry;
+-   static_set_{$name_property} - value entry of a member named $name_property;
+-   static_isset - checking is set member;
+-   static_isset_{$name_property} - checking is set a member named $name_property;
+-   static_unset - delete a member;
+-   static_unset_{$name_property} - removing a member named $name_property;
+-   static_call - call member;
+-   static_call_{$name_property} - call a member named $name_property;
+-   static_invoke - invoke object or class;
+-   static_toString - converting object or class to string;
+-   static_iterator - assigning an iterator to foreach;
 
 A templates for creating action handlers for all members of an object.
 
 Template where static actions and actions for an instance are declared
+
 ```php
 <?php
 use Alpa\Tools\ProxyObject\Proxy;
@@ -439,7 +453,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected function get ($target,string $prop,$value_or_args,ProxyInterface $proxy)
+    protected function & get ($target,string $prop,$value_or_args,ProxyInterface $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -490,7 +504,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected function call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
+    protected function & call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -504,7 +518,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected  function invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
+    protected  function & invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
     {
         return parent::invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -544,7 +558,7 @@ class MyHandlers extends Handlers\Instance
     * @param Proxy $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected static function static_get ($target,string $prop,$value_or_args,Proxy $proxy)
+    protected static function & static_get ($target,string $prop,$value_or_args,Proxy $proxy)
     {
        return  parent::static_get($target,$prop,$value_or_args,$proxy);
     }    
@@ -609,7 +623,7 @@ class MyHandlers extends Handlers\Instance
      * @param Proxy $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected  static function static_invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
+    protected  static function & static_invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -640,7 +654,9 @@ class MyHandlers extends Handlers\Instance
         return parent::static_iterator($target,$prop,$value_or_args,$proxy);
     }
 };
+
 ```
+
 Template where only instance actions
 
 ```php
@@ -658,7 +674,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param ProxyInterface $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected function get ($target,string $prop,$value_or_args,ProxyInterface $proxy)
+    protected function & get ($target,string $prop,$value_or_args,ProxyInterface $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -709,7 +725,7 @@ class MyHandlers extends Handlers\InstanceActions
     * @param ProxyInterface $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected function call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
+    protected function & call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -723,7 +739,7 @@ class MyHandlers extends Handlers\InstanceActions
      * @param ProxyInterface $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected function invoke($target, $prop=null, array $value_or_args, ProxyInterface $proxy)
+    protected function & invoke($target, $prop=null, array $value_or_args, ProxyInterface $proxy)
     {
         return parent::invoke($target,$prop,$value_or_args,$proxy);
     }
@@ -753,7 +769,9 @@ class MyHandlers extends Handlers\InstanceActions
         return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
 };
+
 ```
+
 Template where only static actions
 
 ```php
@@ -770,7 +788,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param ProxyInterface $proxy - the proxy object from which the method is called
     * @return mixed - it is necessary to return the result
     */
-    protected static function get ($target,string $prop,$value_or_args, ProxyInterface $proxy)
+    protected static function  &  get ($target,string $prop,$value_or_args, ProxyInterface $proxy)
     {
        return parent::get($target,$prop,$value_or_args,$proxy);
     }    
@@ -821,7 +839,7 @@ class MyHandlers extends Handlers\StaticActions
     * @param ProxyInterface $proxy the proxy object from which the method is called
     * @return mixed
     */
-    protected static function call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
+    protected static function & call ($target,string $prop,array $value_or_args,ProxyInterface $proxy)
     {
         return parent::call($target,$prop,$value_or_args,$proxy);
     }
@@ -834,7 +852,7 @@ class MyHandlers extends Handlers\StaticActions
      * @param ProxyInterface $proxy the proxy object from which the method is called
      * @return mixed
      */
-    protected static function invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
+    protected static function & invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
     {
         return parent::static_invoke($target,$prop,$value_or_args,$proxy);
     } 
@@ -866,11 +884,10 @@ class MyHandlers extends Handlers\StaticActions
         return parent::iterator($target,$prop,$value_or_args,$proxy);
     } 
 };
+
 ```
 
-
-Action handlers for a specific member are created similar to action handlers for all properties.
-The exceptions are the "invoke"? "toString" and "iterator" actions. they only apply to the observable object or class.
+Action handlers for a specific member are created similar to action handlers for all properties.  The exceptions are the  "invoke"?  "toString"  and  "iterator"  actions.  they only apply to the observable object or class.
 
 Example:
 
@@ -879,14 +896,16 @@ Example:
 use Alpa\Tools\ProxyObject\ProxyInterface;
 use Alpa\Tools\ProxyObject\Handlers;
 class MyHandlers extends Handlers\Instance {
-    protected static function static_get($target,string $prop,$val_or_args,ProxyInterface $proxy)
-    {
-        return is_string($target->$prop)?strtoupper($target->$prop):$target->$prop;        
+    protected static function & static_get($target,string $prop,$val_or_args,ProxyInterface $proxy)
+    {	
+	    $answer=is_string($target->$prop)?strtoupper($target->$prop):$target->$prop; 
+        return  $answer;      
     }
-    protected static function static_get_test($target,string $prop,$val_or_args,ProxyInterface $proxy)
+    protected static function & static_get_test($target,string $prop,$val_or_args,ProxyInterface $proxy)
     {
         // $prop==='test';
-        return is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
+         $answer=is_string($target->$prop)?strtolower($target->$prop):$target->$prop;        
+        return $answer;
     }
 };
 $obj=(object)[
@@ -897,11 +916,12 @@ $proxy=new Proxy($obj,MyHandlers::class);
 
 echo $proxy->test; // hello
 echo $proxy->other;// BAY
+
 ```
+
 ## Proxying class static members
 
-In addition to proxying the members of an object, it is possible to proxy static members of a class.
-To do this, instead of an object, you will need to specify the class
+In addition to proxying the members of an object,  it is possible to proxy static members of a class.  To do this,  instead of an object,  you will need to specify the class
 
 ```php
 <?php
@@ -930,13 +950,12 @@ foreach($proxy as $key=>$value){
 	// prop1 && Hello;
 	// prop2 && BAY;
 }
+
 ```
-
-
 
 ## Creating handler classes
 
-The constructor of the `Alpa \ ProxyObject \ Proxy` class can accept as handlers any object or class that implements the ` Alpa \ ProxyObject \ Handlers \ ActionsInterface` interface.
+The constructor of the  `Alpa \ ProxyObject \ Proxy`  class can accept as handlers any object or class that implements the  `Alpa \ ProxyObject \ Handlers \ ActionsInterface`  interface.
 
 ```php
 <?php
@@ -945,10 +964,10 @@ use Alpa\Tools\ProxyObject\Proxy;
 use Alpa\Tools\ProxyObject\ProxyInterface;
 class MyHandlersClass implements  ActionsInterface
 {
-	public function run(string $action, $target,?string $prop,$value_or_arguments,ProxyInterface $proxy)
+	public function & run(string $action, $target,?string $prop,$value_or_arguments,ProxyInterface $proxy)
 	{
 	}
-	public static  function static_run(string $action, $target,?string $prop,$value_or_arguments,ProxyInterface $proxy)
+	public static  function & static_run(string $action, $target,?string $prop,$value_or_arguments,ProxyInterface $proxy)
 	{
 	}
 }
@@ -956,15 +975,17 @@ $target=(object)[];
 $proxy = new Proxy ($target,MyHandlersClass::class);
 $handlers=new MyHandlersClass ();
 $proxy = new Proxy ($target,$handlers);
+
 ```
 
-For each action (set | get | isset | unset | call | invoke | toString | iterator) you will need to implement working code.  
+For each action  (set  |  get  |  isset  |  unset  |  call  |  invoke  |  toString  |  iterator)  you will need to implement working code.
 
-If for some reason you have bugs or other problems, then it is recommended to implement your own handlers classes that fix this problem.
+If for some reason you have bugs or other problems,  then it is recommended to implement your own handlers classes that fix this problem.
 
 ## Other Proxy Class
-(v>=1.0.11)
-When creating a proxy object by handlers, you can specify which proxy class to use 
+
+(v>=1.0.11)  When creating a proxy object by handlers,  you can specify which proxy class to use
+
 ```php
 <?php
 
@@ -972,8 +993,9 @@ When creating a proxy object by handlers, you can specify which proxy class to u
     final class OtherProxy extends \Alpa\Tools\ProxyObject\ProxyAbstract {
         public function __construct($target,$handlers)
         {
+        //Warning: the types must match the property types in the description.
               $this->target = $target;
-              $this->handlers=$handlers;
+              $this->handlers = $handlers;
         }
     }
     final class MyHandlersClass extends Instance {
@@ -988,16 +1010,16 @@ When creating a proxy object by handlers, you can specify which proxy class to u
     $proxy = new OtherProxy($target,$handlers); 
     var_dump($proxy instanceof OtherProxy);
     // or 
-    final class MyHandlersClass2 extends Instance {   
-        public static $proxyClass = OtherProxy::class;
+    final class MyHandlersClass2 extends Instance {
     }
    
 ?>
+Thus, you can implement your own Proxy component by extending the behavior of the main one, but your component will not depend on the main component.
 ```
 
 ## Difficulties
 
-For a member of a proxy object, it doesn't make sense to apply checks such as `property_exists` or` method_exists` or similar, since they will be applied directly to the proxy object. Therefore, when working with a proxy, always use the `isset` check.  If you have complex logic where you need to check both properties and methods, then it is recommended to separate the logic for working with properties and the logic for working with methods.
+For a member of a proxy object,  it doesn't make sense to apply checks such as  `property_exists`  or`method_exists`  or similar,  since they will be applied directly to the proxy object.  Therefore,  when working with a proxy,  always use the  `isset`  check.  If you have complex logic where you need to check both properties and methods,  then it is recommended to separate the logic for working with properties and the logic for working with methods.
 
 ```php
 <?php
@@ -1028,4 +1050,4 @@ For a member of a proxy object, it doesn't make sense to apply checks such as `p
 	$proxyProps=new Proxy($inst,new  MyHandlers());
 	$proxyMethods=new Proxy($inst,new  MyHandlers(true));
 
-```  
+```

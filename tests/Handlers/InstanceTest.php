@@ -9,7 +9,6 @@ use \PHPUnit\Framework\TestCase;
 
 class InstanceTest extends TestCase
 {
-   
     /**
      * Test the default actions that are assigned by StaticActions class ( static members )
      */
@@ -138,7 +137,8 @@ class InstanceTest extends TestCase
         $inst = new class() extends Instance {
             public static function & static_get($target, string $prop, $val, ProxyInterface $proxy)
             {
-                return isset($target->$prop) ? $target->$prop . '_' : 'empty';
+                $answer=isset($target->$prop) ? $target->$prop . '_' : 'empty';
+                return $answer;
             }
 
             public static function static_set($target, string $prop, $val, ProxyInterface $proxy): void
@@ -163,7 +163,8 @@ class InstanceTest extends TestCase
 
             public static function & static_invoke($target, $prop, array $args, ProxyInterface $proxy)
             {
-                return $args[0] + 1;
+                $answer=$args[0] + 1;
+                return $answer;
             }
 
             public static function static_toString($target, $prop, $args, ProxyInterface $proxy): string
@@ -320,7 +321,8 @@ class InstanceTest extends TestCase
         $inst = new class() extends Instance {
             public function & get($target, string $prop, $val, ProxyInterface $proxy)
             {
-                return isset($target->$prop) ? $target->$prop . '_' : 'empty';
+                $answer=isset($target->$prop) ? $target->$prop . '_' : 'empty';
+                return $answer;
             }
 
             public function set($target, string $prop, $val, ProxyInterface $proxy): void
@@ -345,7 +347,8 @@ class InstanceTest extends TestCase
 
             public function & invoke($target, $prop, array $args, ProxyInterface $proxy)
             {
-                return $args[0] + 1;
+                $answer=$args[0] + 1;
+                return $answer;
             }
 
             public function toString($target, $prop, $args, ProxyInterface $proxy): string

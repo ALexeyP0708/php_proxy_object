@@ -23,8 +23,9 @@ class ProxyTest extends TestCase
     public function test_proxy()
     {
         $handlers = new Closures();
-        $handlers->init('get', function ($target, $name) {
-            return 'success';
+        $handlers->init('get', function & ($target, $name) {
+            $answer='success';
+            return $answer;
         });
         $handlers->init('set', function ($target, $name) {
             $target->$name = 'success';
@@ -40,10 +41,10 @@ class ProxyTest extends TestCase
             unset($target->$name);
         });
 
-        $handlers->init('call', function ($target, $name, $args) {
+        $handlers->init('call', function & ($target, $name, $args) {
             return $args[0];
         });
-        $handlers->init('invoke', function ($target, $args) {
+        $handlers->init('invoke', function & ($target, $args) {
             return $args[0];
         });
         $target = (object)['hello' => 'hello', 'bay' => 'bay'];
