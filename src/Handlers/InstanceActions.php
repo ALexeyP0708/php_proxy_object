@@ -4,7 +4,7 @@
 namespace Alpa\Tools\ProxyObject\Handlers;
 
 
-use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\ProxyInterface;
 
 abstract class InstanceActions implements ActionsInterface
 {
@@ -19,7 +19,7 @@ abstract class InstanceActions implements ActionsInterface
         TInstanceMethods::iterator as protected;
     }
 
-    public static function &static_run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+    public static function &static_run(string $action, $target, ?string $prop, $value_or_args, ProxyInterface $proxy)
     {
 
     }

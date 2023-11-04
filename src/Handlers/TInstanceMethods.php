@@ -2,7 +2,7 @@
 
 namespace Alpa\Tools\ProxyObject\Handlers;
 
-use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\ProxyInterface;
 
 trait TInstanceMethods
 {
@@ -11,11 +11,11 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param string|null $prop
      * @param mixed|null $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      * @throws \Exception
      */
-    public function & run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+    public function & run(string $action, $target, ?string $prop, $value_or_args, ProxyInterface $proxy)
     {
         if (!in_array($action, ['get', 'set', 'isset', 'unset', 'call', 'invoke', 'toString', 'iterator'])) {
             throw new \Exception('Action must be one of the values "get|set|isset|unset|call|invoke|toString|iterator"');
@@ -35,9 +35,9 @@ trait TInstanceMethods
      * @deprecated 
      * @param object|string $target observable object/class
      * @param string|null $proxyClass
-     * @return Proxy
+     * @return ProxyInterface
      */
-    public function newProxy($target, ?string $proxyClass = null): Proxy
+    public function newProxy($target, ?string $proxyClass = null): ProxyInterface
     {
         return TStaticMethods::proxy($target, $this, $proxyClass);
     }
@@ -48,10 +48,10 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param string $prop
      * @param null $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      */
-    public function & get($target, string $prop, $value_or_args, Proxy $proxy)
+    public function & get($target, string $prop, $value_or_args, ProxyInterface $proxy)
     {
         return TStaticMethods::get($target, $prop, $value_or_args, $proxy);
     }
@@ -62,9 +62,9 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param string $prop
      * @param mixed $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      */
-    public function set($target, string $prop, $value_or_args, Proxy $proxy): void
+    public function set($target, string $prop, $value_or_args, ProxyInterface $proxy): void
     {
         TStaticMethods::set($target, $prop, $value_or_args, $proxy);
     }
@@ -75,10 +75,10 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param string $prop
      * @param null $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return bool
      */
-    public function isset($target, string $prop, $value_or_args, Proxy $proxy): bool
+    public function isset($target, string $prop, $value_or_args, ProxyInterface $proxy): bool
     {
         return TStaticMethods::isset($target, $prop, $value_or_args, $proxy);
     }
@@ -89,9 +89,9 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param string $prop
      * @param null $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      */
-    public function unset($target, string $prop, $value_or_args, Proxy $proxy): void
+    public function unset($target, string $prop, $value_or_args, ProxyInterface $proxy): void
     {
         TStaticMethods::unset($target, $prop, $value_or_args, $proxy);
     }
@@ -103,10 +103,10 @@ trait TInstanceMethods
      * @param object|string $target - observable object/class
      * @param string $prop -  object member name
      * @param array $value_or_args - arguments to the called function.
-     * @param Proxy $proxy the proxy object from which the method is called
+     * @param ProxyInterface $proxy the proxy object from which the method is called
      * @return mixed
      */
-    public function & call($target, string $prop, array $value_or_args, Proxy $proxy)
+    public function & call($target, string $prop, array $value_or_args, ProxyInterface $proxy)
     {
         return TStaticMethods::call($target, $prop, $value_or_args, $proxy);
     }
@@ -117,10 +117,10 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param null $prop
      * @param array $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      */
-    public function & invoke($target, $prop, array $value_or_args, Proxy $proxy)
+    public function & invoke($target, $prop, array $value_or_args, ProxyInterface $proxy)
     {
         return TStaticMethods::invoke($target, $prop, $value_or_args, $proxy);
     }
@@ -132,10 +132,10 @@ trait TInstanceMethods
      * @param object|string $target observable object/class
      * @param null $prop
      * @param null $value_or_args
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return string
      */
-    public function toString($target, $prop, $value_or_args, Proxy $proxy): string
+    public function toString($target, $prop, $value_or_args, ProxyInterface $proxy): string
     {
         return TStaticMethods::toString($target, $prop, $value_or_args, $proxy);
     }
@@ -147,11 +147,11 @@ trait TInstanceMethods
      * @param object|string $target observable object
      * @param null $prop irrelevant
      * @param null $value_or_args irrelevant
-     * @param Proxy $proxy the proxy object from which the method is called
+     * @param ProxyInterface $proxy the proxy object from which the method is called
      * @return \Traversable
      * @throws \Exception
      */
-    public function iterator($target, $prop, $value_or_args, Proxy $proxy): \Traversable
+    public function iterator($target, $prop, $value_or_args, ProxyInterface $proxy): \Traversable
     {
         return TStaticMethods::iterator($target, $prop, $value_or_args, $proxy);
     }

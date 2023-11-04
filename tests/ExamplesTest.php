@@ -7,6 +7,7 @@ use Alpa\Tools\ProxyObject\Handlers\Instance;
 use Alpa\Tools\ProxyObject\Proxy;
 use Alpa\Tools\ProxyObject\Handlers\Closures;
 
+use Alpa\Tools\ProxyObject\ProxyInterface;
 use PHPUnit\Framework\TestCase;
 
 class ExamplesTest extends TestCase
@@ -18,19 +19,19 @@ class ExamplesTest extends TestCase
         parent::setUpBeforeClass();
 
         $handlers = new Closures([
-            'get' => function ($target, $name, Proxy $proxy) {
+            'get' => function ($target, $name, ProxyInterface $proxy) {
                 $name = '_' . $name;
                 return $target->$name;
             },
-            'set' => function ($target, $name, $value, Proxy $proxy): void {
+            'set' => function ($target, $name, $value, ProxyInterface $proxy): void {
                 $name = '_' . $name;
                 $target->$name = $value;
             },
-            'isset' => function ($target, $name, Proxy $proxy): bool {
+            'isset' => function ($target, $name, ProxyInterface $proxy): bool {
                 $name = '_' . $name;
                 return property_exists($target, $name);
             },
-            'unset' => function ($target, $name, Proxy $proxy): void {
+            'unset' => function ($target, $name, ProxyInterface $proxy): void {
                 $name = '_' . $name;
                 unset($target->$name);
             },
@@ -41,7 +42,7 @@ class ExamplesTest extends TestCase
                     private array $keys = [];
                     private int $key = 0;
 
-                    public function __construct(object $target, Proxy $proxy)
+                    public function __construct(object $target, ProxyInterface $proxy)
                     {
                         $this->target = $target;
                         $this->proxy = $proxy;

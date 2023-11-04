@@ -3,8 +3,7 @@
 
 namespace Alpa\Tools\ProxyObject\Handlers;
 
-
-use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\ProxyInterface;
 
 class Closures implements ActionsInterface
 {
@@ -46,11 +45,11 @@ class Closures implements ActionsInterface
      * @param object|string $target
      * @param string|null $prop
      * @param array|mixed $value_or_arguments
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return bool|mixed|string|\Traversable
      * @throws \Exception
      */
-    public function & run(string $action, $target, ?string $prop, $value_or_arguments, Proxy $proxy)
+    public function & run(string $action, $target, ?string $prop, $value_or_arguments, ProxyInterface $proxy)
     {
         switch ($action) {
             case 'get':
@@ -121,10 +120,10 @@ class Closures implements ActionsInterface
      * runs handler for the property with the 'get' action
      * @param object|string $target observable object/class
      * @param string $prop
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      */
-    protected function & runGet($target, string $prop, Proxy $proxy)
+    protected function & runGet($target, string $prop, ProxyInterface $proxy)
     {
         $action = 'get';
         if (array_key_exists($prop, $this->properties[$action])) {
@@ -141,10 +140,10 @@ class Closures implements ActionsInterface
      * @param object|string $target observable object/class
      * @param string $prop member of object /class
      * @param mixed $value
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      */
-    protected function runSet($target, string $prop, $value, Proxy $proxy): void
+    protected function runSet($target, string $prop, $value, ProxyInterface $proxy): void
     {
         $action = 'set';
         if (array_key_exists($prop, $this->properties[$action])) {
@@ -161,10 +160,10 @@ class Closures implements ActionsInterface
      * runs handler for the property with the 'isset' action
      * @param object|string $target observable object/class
      * @param string $prop member of object /class
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return bool
      */
-    protected function runIsset($target, string $prop, Proxy $proxy): bool
+    protected function runIsset($target, string $prop, ProxyInterface $proxy): bool
     {
         $action = 'isset';
         if (array_key_exists($prop, $this->properties[$action])) {
@@ -180,10 +179,10 @@ class Closures implements ActionsInterface
      * runs handler for the property with the 'unset' action
      * @param object|string $target observable object/class
      * @param string $prop member of object /class
-     * @param Proxy|null $proxy
+     * @param ProxyInterface $proxy
      * @return void
      */
-    protected function runUnset($target, string $prop, Proxy $proxy): void
+    protected function runUnset($target, string $prop, ProxyInterface $proxy): void
     {
         $action = 'unset';
         if (array_key_exists($prop, $this->properties[$action])) {
@@ -202,11 +201,11 @@ class Closures implements ActionsInterface
      * @param object|string $target observable object/class
      * @param string $prop member of object / class
      * @param array $arguments Execution arguments
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      * @throws \Exception
      */
-    protected function &runCall($target, string $prop, array $arguments, Proxy $proxy)
+    protected function &runCall($target, string $prop, array $arguments, ProxyInterface $proxy)
     {
         $action = 'call';
         if (array_key_exists($prop, $this->properties[$action])) {
@@ -222,11 +221,11 @@ class Closures implements ActionsInterface
      * invoke object / class
      * @param object|string $target observable object/class
      * @param array $arguments
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return mixed
      * @throws \Exception
      */
-    protected function &runInvoke($target, array $arguments, Proxy $proxy)
+    protected function &runInvoke($target, array $arguments, ProxyInterface $proxy)
     {
         $action = 'invoke';
         if ($this->$action !== null) {
@@ -239,11 +238,11 @@ class Closures implements ActionsInterface
      * ToString action.
      * to string object or class
      * @param object|string $target observable object/class
-     * @param Proxy $proxy
+     * @param ProxyInterface $proxy
      * @return string
      * @throws \Exception
      */
-    protected function runToString($target, Proxy $proxy): string
+    protected function runToString($target, ProxyInterface $proxy): string
     {
         $action = 'toString';
         if ($this->$action !== null) {
@@ -255,11 +254,11 @@ class Closures implements ActionsInterface
     /**
      * Iterator action.
      * @param object|string $target observable object/class
-     * @param Proxy|null $proxy
+     * @param ProxyInterface $proxy
      * @return \Traversable
      * @throws \Exception
      */
-    protected function runIterator($target, Proxy $proxy): \Traversable
+    protected function runIterator($target, ProxyInterface $proxy): \Traversable
     {
         if ($this->iterator !== null) {
             return ($this->iterator)($target, $proxy);
@@ -267,7 +266,7 @@ class Closures implements ActionsInterface
         return TStaticMethods::static_run('iterator', $target, null, null, $proxy);
     }
 
-    public static function  &static_run(string $action, $target, ?string $prop, $value_or_arguments, Proxy $proxy)
+    public static function  &static_run(string $action, $target, ?string $prop, $value_or_arguments, ProxyInterface $proxy)
     {
 
     }

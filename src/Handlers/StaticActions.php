@@ -4,7 +4,7 @@
 namespace Alpa\Tools\ProxyObject\Handlers;
 
 
-use Alpa\Tools\ProxyObject\Proxy;
+use Alpa\Tools\ProxyObject\ProxyInterface;
 
 abstract class StaticActions implements ActionsInterface
 {
@@ -24,7 +24,7 @@ abstract class StaticActions implements ActionsInterface
         return '';
     }
 
-    public function &run(string $action, $target, ?string $prop, $value_or_args, Proxy $proxy)
+    public function &run(string $action, $target, ?string $prop, $value_or_args, ProxyInterface $proxy)
     {
 
     }

@@ -6,7 +6,7 @@ namespace Alpa\Tools\ProxyObject;
 
 use Alpa\Tools\ProxyObject\Handlers\ActionsInterface;
 
-abstract class ProxyAbstract implements \IteratorAggregate
+abstract class ProxyAbstract implements ProxyInterface
 {
 
     /**
@@ -42,7 +42,7 @@ abstract class ProxyAbstract implements \IteratorAggregate
 
     //Note:None of the arguments of these magic methods can be passed by reference.
     // https://www.php.net/manual/en/language.oop5.overloading.php
-    public function __set(string $name, $value)
+    public function __set(string $name, $value):void
     {
         $this->run('set', $name, $value);
     }

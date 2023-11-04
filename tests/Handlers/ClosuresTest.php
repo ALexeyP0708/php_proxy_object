@@ -2,6 +2,7 @@
 
 namespace Alpa\Tools\ProxyObject\Tests;
 
+use Alpa\Tools\ProxyObject\ProxyInterface;
 use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use Alpa\Tools\ProxyObject\Proxy;
@@ -58,7 +59,7 @@ class ClosuresTest extends TestCase
             public ?\Closure $iterator = null;
             public ?\Closure $invoke = null;
 
-            public function &runGet($target, string $prop, Proxy $proxy)
+            public function &runGet($target, string $prop, ProxyInterface $proxy)
             {
                 self::refNoticeErrorHandler();
                 $answer= & parent::runGet($target, $prop, $proxy);
@@ -66,14 +67,14 @@ class ClosuresTest extends TestCase
                 return $answer;
             }
 
-            public function runSet($target, string $prop, $value, Proxy $proxy): void
+            public function runSet($target, string $prop, $value, ProxyInterface $proxy): void
             {
                 self::refNoticeErrorHandler();
                 parent::runSet($target, $prop, $value, $proxy);
                 self::restoreErrorHandler();
             }
 
-            public function runIsset($target, string $prop, Proxy $proxy): bool
+            public function runIsset($target, string $prop, ProxyInterface $proxy): bool
             {
                 self::refNoticeErrorHandler();
                 $answer = parent::runIsset($target, $prop, $proxy);
@@ -81,14 +82,14 @@ class ClosuresTest extends TestCase
                 return $answer;
             }
 
-            public function runUnset($target, string $prop, Proxy $proxy): void
+            public function runUnset($target, string $prop, ProxyInterface $proxy): void
             {
                 self::refNoticeErrorHandler();
                 parent::runUnset($target, $prop, $proxy);
                 self::restoreErrorHandler();
             }
 
-            public function & runCall($target, string $prop, array $arguments, Proxy $proxy)
+            public function & runCall($target, string $prop, array $arguments, ProxyInterface $proxy)
             {
                 self::refNoticeErrorHandler();
                 $answer = & parent::runCall($target, $prop, $arguments, $proxy);
@@ -96,7 +97,7 @@ class ClosuresTest extends TestCase
                 return $answer;
             }
 
-            public function & runInvoke($target, array $arguments, Proxy $proxy)
+            public function & runInvoke($target, array $arguments, ProxyInterface $proxy)
             {
                 self::refNoticeErrorHandler();
                 $answer = & parent::runInvoke($target, $arguments, $proxy);
@@ -104,14 +105,14 @@ class ClosuresTest extends TestCase
                 return $answer;
             }
 
-            public function runToString($target, Proxy $proxy): string
+            public function runToString($target, ProxyInterface $proxy): string
             {
                 $answer = parent::runToString($target, $proxy);
                 self::restoreErrorHandler();
                 return $answer;
             }
 
-            public function runIterator($target, Proxy $proxy): \Traversable
+            public function runIterator($target, ProxyInterface $proxy): \Traversable
             {
                 return parent::runIterator($target, $proxy);
             }
