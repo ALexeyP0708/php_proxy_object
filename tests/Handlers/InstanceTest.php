@@ -75,7 +75,7 @@ class InstanceTest extends TestCase
             
         };
         $inst = new class() extends Instance {
-            public static function & static_invoke($target, $prop, array $args, Proxy $proxy)
+            public static function & static_invoke($target, $prop, array $args, ProxyInterface $proxy)
             {
                 return $target->prop;
             }

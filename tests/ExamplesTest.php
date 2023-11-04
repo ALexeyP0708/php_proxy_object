@@ -35,7 +35,7 @@ class ExamplesTest extends TestCase
                 $name = '_' . $name;
                 unset($target->$name);
             },
-            'iterator' => function ($target, $proxy) {
+            'iterator' => function ($target, ProxyInterface $proxy) {
                 return new class($target, $proxy) implements \Iterator {
                     private object $target;
                     private Proxy $proxy;
@@ -112,12 +112,12 @@ class ExamplesTest extends TestCase
     public static function test_example_3()
     {
         $inst = new class () extends Instance {
-            protected static function &static_get( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected static function &static_get( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($target->$prop) : $target->$prop;
             }
 
-            protected static function static_get_test( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected static function static_get_test( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
                 return is_string($target->$prop) ? strtolower($target->$prop) : $target->$prop;
             }
@@ -126,7 +126,7 @@ class ExamplesTest extends TestCase
             'test' => 'HELLO',
             'other' => 'bay'
         ];
-        $proxy = $inst::proxy($obj);
+        $proxy = new Proxy($obj,get_class($inst));
         static::assertTrue($proxy->test === 'hello');
         static::assertTrue($proxy->other === 'BAY');
     }
@@ -139,12 +139,12 @@ class ExamplesTest extends TestCase
                 $this->prefix = $prefix;
             }
 
-            protected function &get( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected function &get( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
                 return is_string($target->$prop) ? strtoupper($this->prefix . $target->$prop) : $target->$prop;
             }
 
-            protected function get_test( $target, string $prop, $val_or_args, Proxy $proxy)
+            protected function get_test( $target, string $prop, $val_or_args, ProxyInterface $proxy)
             {
                 return is_string($target->$prop) ? strtolower($this->prefix . $target->$prop) : $target->$prop;
             }
@@ -153,7 +153,7 @@ class ExamplesTest extends TestCase
             'test' => 'HELLO',
             'other' => 'bay'
         ];
-        $proxy = $inst->newProxy($obj);
+        $proxy = new Proxy($obj,$inst);
         static::assertTrue($proxy->test === 'alex hello');
         static::assertTrue($proxy->other === 'ALEX BAY');
     }

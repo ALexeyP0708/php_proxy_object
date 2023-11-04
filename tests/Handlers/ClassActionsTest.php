@@ -16,7 +16,7 @@ class ClassActionsTest extends TestCase
     {
         $actions=new class () extends StaticActions{};
         $target=(object)['hello'=>'hello'];
-        $proxy=new Proxy($target,$actions);
+        $proxy=new Proxy($target,get_class($actions));
         static::assertTrue($proxy->hello==='hello');
     }
     public static function test_instance_actions()
